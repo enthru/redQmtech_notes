@@ -1,0 +1,1 @@
+# redQmtech_notes
