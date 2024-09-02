@@ -54,22 +54,6 @@ set_property IOSTANDARD LVCMOS33 [get_ports adc_clk_i]
 
 set_property PACKAGE_PIN Y19 [get_ports adc_clk_i]
 
-### clock output
-
-##was 18
-#set_property IOSTANDARD LVCMOS33 [get_ports adc_enc_p_o]
-#set_property IOSTANDARD LVCMOS33 [get_ports adc_enc_n_o]
-###
-
-#set_property SLEW FAST [get_ports adc_enc_p_o]
-#set_property SLEW FAST [get_ports adc_enc_n_o]
-
-#set_property DRIVE 8 [get_ports adc_enc_p_o]
-#set_property DRIVE 8 [get_ports adc_enc_n_o]
-
-#set_property PACKAGE_PIN C18 [get_ports adc_enc_p_o]
-#set_property PACKAGE_PIN C17 [get_ports adc_enc_n_o]
-
 # clock duty cycle stabilizer (CSn)
 
 set_property IOSTANDARD LVCMOS33 [get_ports adc_csn_o]
