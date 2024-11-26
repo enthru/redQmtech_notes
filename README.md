@@ -17,6 +17,9 @@ Pins assignment can be found in this file - cfg/ports.xdc
 <br /><br />
 **Some links:**
 <br />
+<br />
 EasyEDA project of the example ADC board - https://oshwlab.com/neuroworker/redqmtechadc
+<br />
 Some history of the project - https://enthru.net/?tag=qmtech
+<br />
 Github project with the gerbers and some pics - https://github.com/enthru/redQmtech_notes_adc
