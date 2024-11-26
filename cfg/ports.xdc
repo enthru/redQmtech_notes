@@ -30,7 +30,8 @@ set_property IOSTANDARD LVCMOS33 [get_ports {adc_dat_b_i[*]}]
 set_property IOB TRUE [get_ports {adc_dat_b_i[*]}]
 
 set_property PACKAGE_PIN Y21 [get_ports {adc_dat_b_i[0]}]
-set_property PACKAGE_PIN Y20 [get_ports {adc_dat_b_i[1]}]
+#As 2d ADC not used for now, temporary set to the Y19 just to fill ports. See comment below.
+set_property PACKAGE_PIN Y19 [get_ports {adc_dat_b_i[1]}]
 set_property PACKAGE_PIN AB20 [get_ports {adc_dat_b_i[2]}]
 set_property PACKAGE_PIN AB19 [get_ports {adc_dat_b_i[3]}]
 set_property PACKAGE_PIN AB17 [get_ports {adc_dat_b_i[4]}]
@@ -48,11 +49,16 @@ set_property PACKAGE_PIN W16 [get_ports {adc_dat_b_i[15]}]
 
 # clock input
 
-#maybe should be 33
-set_property IOSTANDARD LVCMOS33 [get_ports adc_clk_i]
-##
+#This is bad idea, it allows to bypass warning about non optimal location of the input pin of the clock and PLL
+#I used it because I forgot about correct pin of the clock input while designing ADC board.
+#better to redesign ADC board and assign clock input to the Y19 pin not to the Y20 as it was before
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets system_i/pll_0/inst/clk_in1_system_pll_0_0]
+#end of the bad idea :)
 
-set_property PACKAGE_PIN Y19 [get_ports adc_clk_i]
+
+set_property IOSTANDARD LVCMOS33 [get_ports adc_clk_i]
+#change this pin to the Y19 in future, or do something with PLL, or... do nothing :)
+set_property PACKAGE_PIN Y20 [get_ports adc_clk_i]
 
 # clock duty cycle stabilizer (CSn)
 
@@ -123,7 +129,6 @@ set_property PACKAGE_PIN E18 [get_ports {exp_p_tri_io[7]}]
 set_property PACKAGE_PIN F18 [get_ports {exp_n_tri_io[7]}]
 
 #HPSDR TRX Alex
-
 set_property PULLTYPE PULLUP [get_ports {exp_n_tri_io[0]}]
 set_property PULLTYPE PULLUP [get_ports {exp_n_tri_io[1]}]
 set_property PULLTYPE PULLUP [get_ports {exp_n_tri_io[2]}]
@@ -133,8 +138,8 @@ set_property IOSTANDARD LVCMOS33 [get_ports {exp_n_alex[*]}]
 set_property SLEW FAST [get_ports {exp_n_alex[*]}]
 set_property DRIVE 8 [get_ports {exp_n_alex[*]}]
 
-set_property PACKAGE_PIN F17 [get_ports {exp_n_alex[0]}]
-set_property PACKAGE_PIN G17 [get_ports {exp_n_alex[1]}]
-set_property PACKAGE_PIN A19 [get_ports {exp_n_alex[2]}]
-set_property PACKAGE_PIN A18 [get_ports {exp_n_alex[3]}]
+set_property PACKAGE_PIN D18 [get_ports {exp_n_alex[0]}]
+set_property PACKAGE_PIN B19 [get_ports {exp_n_alex[1]}]
+set_property PACKAGE_PIN A21 [get_ports {exp_n_alex[2]}]
+set_property PACKAGE_PIN F18 [get_ports {exp_n_alex[3]}]
 
