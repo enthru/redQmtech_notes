@@ -8,7 +8,7 @@ At this moment I'm using it with DAC904E DAC and AD6645 ADC. Replacing AD6645 to
 <br /><br />
 
 **Note:**
-With my LTC2208 board you can use bitstream created from oneADC branch (see releases and commentaries in the ports.xdc file in oneADC branch).
+With my LTC2208 board you can use bitstream created from oneADC branch (see release notes and commentaries in the ports.xdc file in the oneADC branch).
 Or just solder clock pin from adc board to FPGA board by wire.
 
 **Board pins:**
