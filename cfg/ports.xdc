@@ -29,7 +29,8 @@ set_property PACKAGE_PIN AB21 [get_ports {adc_dat_a_i[15]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {adc_dat_b_i[*]}]
 set_property IOB TRUE [get_ports {adc_dat_b_i[*]}]
 
-set_property PACKAGE_PIN Y20 [get_ports {adc_dat_b_i[0]}]
+#As 2d ADC not used for now, temporary set to the Y19 just to fill ports. See comment below.
+set_property PACKAGE_PIN Y19 [get_ports {adc_dat_b_i[0]}]
 set_property PACKAGE_PIN Y21 [get_ports {adc_dat_b_i[1]}]
 set_property PACKAGE_PIN AB19 [get_ports {adc_dat_b_i[2]}]
 set_property PACKAGE_PIN AB20 [get_ports {adc_dat_b_i[3]}]
@@ -48,8 +49,13 @@ set_property PACKAGE_PIN Y16 [get_ports {adc_dat_b_i[15]}]
 
 # clock input
 
+#This is allowing to bypass warning about non optimal location of the clock input pin
+#I'm using it because I forgot about correct pin of the clock input while designing ADC board.
+#It will be better to redesign ADC board and assign clock input to the Y19 pin
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets system_i/pll_0/inst/clk_in1_system_pll_0_0]
+
 set_property IOSTANDARD LVCMOS33 [get_ports adc_clk_i]
-set_property PACKAGE_PIN Y19 [get_ports adc_clk_i]
+set_property PACKAGE_PIN Y20 [get_ports adc_clk_i]
 
 # clock duty cycle stabilizer (CSn)
 
@@ -67,20 +73,20 @@ set_property SLEW SLOW [get_ports {dac_dat_o[*]}]
 set_property DRIVE 4 [get_ports {dac_dat_o[*]}]
 # set_property IOB TRUE [get_ports {dac_dat_o[*]}]
 
-set_property PACKAGE_PIN K18 [get_ports {dac_dat_o[0]}]
-set_property PACKAGE_PIN J18 [get_ports {dac_dat_o[1]}]
-set_property PACKAGE_PIN F22 [get_ports {dac_dat_o[2]}]
-set_property PACKAGE_PIN F21 [get_ports {dac_dat_o[3]}]
-set_property PACKAGE_PIN H20 [get_ports {dac_dat_o[4]}]
-set_property PACKAGE_PIN H19 [get_ports {dac_dat_o[5]}]
-set_property PACKAGE_PIN G22 [get_ports {dac_dat_o[6]}]
-set_property PACKAGE_PIN H22 [get_ports {dac_dat_o[7]}]
-set_property PACKAGE_PIN J22 [get_ports {dac_dat_o[8]}]
-set_property PACKAGE_PIN J21 [get_ports {dac_dat_o[9]}]
-set_property PACKAGE_PIN K20 [get_ports {dac_dat_o[10]}]
-set_property PACKAGE_PIN K19 [get_ports {dac_dat_o[11]}]
-set_property PACKAGE_PIN L22 [get_ports {dac_dat_o[12]}]
-set_property PACKAGE_PIN L21 [get_ports {dac_dat_o[13]}]
+set_property PACKAGE_PIN L21 [get_ports {dac_dat_o[0]}]
+set_property PACKAGE_PIN L22 [get_ports {dac_dat_o[1]}]
+set_property PACKAGE_PIN K19 [get_ports {dac_dat_o[2]}]
+set_property PACKAGE_PIN K20 [get_ports {dac_dat_o[3]}]
+set_property PACKAGE_PIN J21 [get_ports {dac_dat_o[4]}]
+set_property PACKAGE_PIN J22 [get_ports {dac_dat_o[5]}]
+set_property PACKAGE_PIN H22 [get_ports {dac_dat_o[6]}]
+set_property PACKAGE_PIN G22 [get_ports {dac_dat_o[7]}]
+set_property PACKAGE_PIN H19 [get_ports {dac_dat_o[8]}]
+set_property PACKAGE_PIN H20 [get_ports {dac_dat_o[9]}]
+set_property PACKAGE_PIN F21 [get_ports {dac_dat_o[10]}]
+set_property PACKAGE_PIN F22 [get_ports {dac_dat_o[11]}]
+set_property PACKAGE_PIN J18 [get_ports {dac_dat_o[12]}]
+set_property PACKAGE_PIN K18 [get_ports {dac_dat_o[13]}]
 
 # control
 
@@ -89,9 +95,17 @@ set_property SLEW FAST [get_ports dac_*_o]
 set_property DRIVE 8 [get_ports dac_*_o]
 
 set_property PACKAGE_PIN J17 [get_ports dac_wrt_o]
-set_property PACKAGE_PIN J16 [get_ports dac_sel_o]
-set_property PACKAGE_PIN E20 [get_ports dac_clk_o]
+set_property PACKAGE_PIN E20 [get_ports dac_sel_o]
+set_property PACKAGE_PIN J16 [get_ports dac_clk_o]
 set_property PACKAGE_PIN E19 [get_ports dac_rst_o]
+
+#clock for DAC904
+
+#set_property IOSTANDARD LVCMOS33 [get_ports pll_out]
+#set_property SLEW FAST [get_ports pll_out]
+#set_property DRIVE 8 [get_ports pll_out]
+
+#set_property PACKAGE_PIN J16 [get_ports pll_out]
 
 ### Expansion connector
 

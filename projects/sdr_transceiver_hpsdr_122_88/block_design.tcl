@@ -7,10 +7,10 @@ cell xilinx.com:ip:clk_wiz pll_0 {
   CLKOUT1_USED true
   CLKOUT1_REQUESTED_OUT_FREQ 122.88
   CLKOUT2_USED true
-  CLKOUT2_REQUESTED_OUT_FREQ 245.76
+  CLKOUT2_REQUESTED_OUT_FREQ 122.88
   CLKOUT2_REQUESTED_PHASE 157.5
   CLKOUT3_USED true
-  CLKOUT3_REQUESTED_OUT_FREQ 245.76
+  CLKOUT3_REQUESTED_OUT_FREQ 122.88
   CLKOUT3_REQUESTED_PHASE 202.5
   USE_RESET false
 } {
@@ -346,3 +346,9 @@ module rx_1 {
 } {
   hub_0/S_AXI ps_0/M_AXI_GP1
 }
+
+#cell pavel-demin:user:pll_out pll_out_0 {
+#} {
+#  clk_in pll_0/clk_out1
+#  pll_out_pin pll_out
+#}
