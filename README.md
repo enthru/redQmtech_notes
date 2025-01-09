@@ -11,8 +11,8 @@ Pins assignment can be found in this file - cfg/ports.xdc
 **Some links:**
 <br />
 <br />
-EasyEDA project of the example ADC board - https://oshwlab.com/neuroworker/redqmtechadc
+EasyEDA project of the example ADC board with two LTC2208 (not tested yet) - https://oshwlab.com/neuroworker/redqmtechadc
 <br />
 Some history of the project - https://enthru.net/?tag=qmtech
 <br />
-Github project with the gerbers and some pics - https://github.com/enthru/redQmtech_notes_adc
+Github project with the gerbers and some pics for single ADC module - https://github.com/enthru/redQmtech_notes_adc
