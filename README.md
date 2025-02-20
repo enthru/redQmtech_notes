@@ -1,6 +1,6 @@
 # redQmtech_notes
 
-This is an adaptation of red-pitaya hpsdr receiver/transceiver code by Pavel Demin for QMTech 7z020 board. It's in fact original code with some disabled features/peripherals and changed pinout.
+This is an adaptation of red-pitaya hpsdr receiver/transceiver code by Pavel Demin (https://github.com/pavel-demin/red-pitaya-notes/) for QMTech 7z020 board. It's in fact original code with some disabled features/peripherals and changed pinout.
 <br />
 
 **Board pins:**
