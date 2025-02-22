@@ -9,61 +9,44 @@
 set_property IOSTANDARD LVCMOS33 [get_ports {adc_dat_a_i[*]}]
 set_property IOB TRUE [get_ports {adc_dat_a_i[*]}]
 
-set_property PACKAGE_PIN T22 [get_ports {adc_dat_a_i[0]}]
-set_property PACKAGE_PIN U22 [get_ports {adc_dat_a_i[1]}]
-set_property PACKAGE_PIN U20 [get_ports {adc_dat_a_i[2]}]
-set_property PACKAGE_PIN V20 [get_ports {adc_dat_a_i[3]}]
-set_property PACKAGE_PIN T21 [get_ports {adc_dat_a_i[4]}]
-set_property PACKAGE_PIN U21 [get_ports {adc_dat_a_i[5]}]
-set_property PACKAGE_PIN V22 [get_ports {adc_dat_a_i[6]}]
-set_property PACKAGE_PIN W22 [get_ports {adc_dat_a_i[7]}]
-set_property PACKAGE_PIN W20 [get_ports {adc_dat_a_i[8]}]
-set_property PACKAGE_PIN W21 [get_ports {adc_dat_a_i[9]}]
-set_property PACKAGE_PIN V18 [get_ports {adc_dat_a_i[10]}]
-set_property PACKAGE_PIN V19 [get_ports {adc_dat_a_i[11]}]
-set_property PACKAGE_PIN AA22 [get_ports {adc_dat_a_i[12]}]
-set_property PACKAGE_PIN AB22 [get_ports {adc_dat_a_i[13]}]
-set_property PACKAGE_PIN AA21 [get_ports {adc_dat_a_i[14]}]
-set_property PACKAGE_PIN AB21 [get_ports {adc_dat_a_i[15]}]
+set_property PACKAGE_PIN AA19 [get_ports {adc_dat_a_i[0]}]
+set_property PACKAGE_PIN AA17 [get_ports {adc_dat_a_i[1]}]
+set_property PACKAGE_PIN AB17 [get_ports {adc_dat_a_i[2]}]
+set_property PACKAGE_PIN AA16 [get_ports {adc_dat_a_i[3]}]
+set_property PACKAGE_PIN AB16 [get_ports {adc_dat_a_i[4]}]
+set_property PACKAGE_PIN AB14 [get_ports {adc_dat_a_i[5]}]
+set_property PACKAGE_PIN AB15 [get_ports {adc_dat_a_i[6]}]
+set_property PACKAGE_PIN Y18 [get_ports {adc_dat_a_i[7]}]
+set_property PACKAGE_PIN AA18 [get_ports {adc_dat_a_i[8]}]
+set_property PACKAGE_PIN W17 [get_ports {adc_dat_a_i[9]}]
+set_property PACKAGE_PIN W18 [get_ports {adc_dat_a_i[10]}]
+set_property PACKAGE_PIN W16 [get_ports {adc_dat_a_i[11]}]
 
 set_property IOSTANDARD LVCMOS33 [get_ports {adc_dat_b_i[*]}]
 set_property IOB TRUE [get_ports {adc_dat_b_i[*]}]
 
-#As 2d ADC not used for now, temporary set to the Y19 just to fill ports. See comment below.
-set_property PACKAGE_PIN Y19 [get_ports {adc_dat_b_i[0]}]
-set_property PACKAGE_PIN Y21 [get_ports {adc_dat_b_i[1]}]
-set_property PACKAGE_PIN AB19 [get_ports {adc_dat_b_i[2]}]
-set_property PACKAGE_PIN AB20 [get_ports {adc_dat_b_i[3]}]
-set_property PACKAGE_PIN AA17 [get_ports {adc_dat_b_i[4]}]
-set_property PACKAGE_PIN AB17 [get_ports {adc_dat_b_i[5]}]
-set_property PACKAGE_PIN AA16 [get_ports {adc_dat_b_i[6]}]
-set_property PACKAGE_PIN AB16 [get_ports {adc_dat_b_i[7]}]
-set_property PACKAGE_PIN AB14 [get_ports {adc_dat_b_i[8]}]
-set_property PACKAGE_PIN AB15 [get_ports {adc_dat_b_i[9]}]
-set_property PACKAGE_PIN Y18 [get_ports {adc_dat_b_i[10]}]
-set_property PACKAGE_PIN AA18 [get_ports {adc_dat_b_i[11]}]
-set_property PACKAGE_PIN W17 [get_ports {adc_dat_b_i[12]}]
-set_property PACKAGE_PIN W18 [get_ports {adc_dat_b_i[13]}]
-set_property PACKAGE_PIN W16 [get_ports {adc_dat_b_i[14]}]
-set_property PACKAGE_PIN Y16 [get_ports {adc_dat_b_i[15]}]
+set_property PACKAGE_PIN T22 [get_ports {adc_dat_b_i[0]}]
+set_property PACKAGE_PIN U22 [get_ports {adc_dat_b_i[1]}]
+set_property PACKAGE_PIN U20 [get_ports {adc_dat_b_i[2]}]
+set_property PACKAGE_PIN V20 [get_ports {adc_dat_b_i[3]}]
+set_property PACKAGE_PIN T21 [get_ports {adc_dat_b_i[4]}]
+set_property PACKAGE_PIN U21 [get_ports {adc_dat_b_i[5]}]
+set_property PACKAGE_PIN V22 [get_ports {adc_dat_b_i[6]}]
+set_property PACKAGE_PIN W22 [get_ports {adc_dat_b_i[7]}]
+set_property PACKAGE_PIN W20 [get_ports {adc_dat_b_i[8]}]
+set_property PACKAGE_PIN W21 [get_ports {adc_dat_b_i[9]}]
+set_property PACKAGE_PIN V18 [get_ports {adc_dat_b_i[10]}]
+set_property PACKAGE_PIN V19 [get_ports {adc_dat_b_i[11]}]
 
 # clock input
-
-#This is bad idea, it allows to bypass warning about non optimal location of the input pin of the clock and PLL
-#I used it because I forgot about correct pin of the clock input while designing ADC board.
-#better to redesign ADC board and assign clock input to the Y19 pin not to the Y20 as it was before
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets system_i/pll_0/inst/clk_in1_system_pll_0_0]
-#end of the bad idea :)
-
-
+#set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets {system_i/pll_0/inst/clk_in1_system_pll_0_0}]
 set_property IOSTANDARD LVCMOS33 [get_ports adc_clk_i]
-#change this pin to the Y19 in future, or do something with PLL, or... do nothing :)
-set_property PACKAGE_PIN Y20 [get_ports adc_clk_i]
+set_property PACKAGE_PIN Y19 [get_ports adc_clk_i]
 
 # clock duty cycle stabilizer (CSn)
 
 set_property IOSTANDARD LVCMOS33 [get_ports adc_csn_o]
-set_property PACKAGE_PIN AA19    [get_ports adc_csn_o]
+set_property PACKAGE_PIN U15    [get_ports adc_csn_o]
 set_property SLEW FAST [get_ports adc_csn_o]
 set_property DRIVE 8 [get_ports adc_csn_o]
 
@@ -87,21 +70,6 @@ set_property PACKAGE_PIN F17 [get_ports {dac_dat_o[10]}]
 set_property PACKAGE_PIN G17 [get_ports {dac_dat_o[11]}]
 set_property PACKAGE_PIN A19 [get_ports {dac_dat_o[12]}]
 set_property PACKAGE_PIN A18 [get_ports {dac_dat_o[13]}]
-
-#set_property PACKAGE_PIN A18 [get_ports {dac_dat_o[0]}]
-#set_property PACKAGE_PIN A19 [get_ports {dac_dat_o[1]}]
-#set_property PACKAGE_PIN G17 [get_ports {dac_dat_o[2]}]
-#set_property PACKAGE_PIN F17 [get_ports {dac_dat_o[3]}]
-#set_property PACKAGE_PIN C17 [get_ports {dac_dat_o[4]}]
-#set_property PACKAGE_PIN C18 [get_ports {dac_dat_o[5]}]
-#set_property PACKAGE_PIN F18 [get_ports {dac_dat_o[6]}]
-#set_property PACKAGE_PIN E18 [get_ports {dac_dat_o[7]}]
-#set_property PACKAGE_PIN A21 [get_ports {dac_dat_o[8]}]
-#set_property PACKAGE_PIN A22 [get_ports {dac_dat_o[9]}]
-#set_property PACKAGE_PIN B19 [get_ports {dac_dat_o[10]}]
-#set_property PACKAGE_PIN B20 [get_ports {dac_dat_o[11]}]
-#set_property PACKAGE_PIN D18 [get_ports {dac_dat_o[12]}]
-#set_property PACKAGE_PIN C19 [get_ports {dac_dat_o[13]}]
 
 # DAC stuff
 set_property IOSTANDARD LVCMOS33 [get_ports dac_*_o]

@@ -2,15 +2,15 @@
 cell xilinx.com:ip:clk_wiz pll_0 {
   PRIMITIVE PLL
   PRIM_IN_FREQ.VALUE_SRC USER
-  PRIM_IN_FREQ 122.88
+  PRIM_IN_FREQ 61.44
   PRIM_SOURCE Single_ended_clock_capable_pin
   CLKOUT1_USED true
-  CLKOUT1_REQUESTED_OUT_FREQ 122.88
+  CLKOUT1_REQUESTED_OUT_FREQ 61.44
   CLKOUT2_USED true
-  CLKOUT2_REQUESTED_OUT_FREQ 245.76
-  CLKOUT2_REQUESTED_PHASE 157.5
+  CLKOUT2_REQUESTED_OUT_FREQ 122.88
+  #CLKOUT2_REQUESTED_PHASE 157.5
   CLKOUT3_USED true
-  CLKOUT3_REQUESTED_OUT_FREQ 245.76
+  CLKOUT3_REQUESTED_OUT_FREQ 122.88
   CLKOUT3_REQUESTED_PHASE 202.5
   USE_RESET false
 } {
@@ -71,7 +71,7 @@ cell pavel-demin:user:axi_hub hub_0 {
 
 # Create axis_red_pitaya_adc
 cell pavel-demin:user:axis_red_pitaya_adc adc_0 {
-  ADC_DATA_WIDTH 16
+  ADC_DATA_WIDTH 12
 } {
   aclk pll_0/clk_out1
   adc_dat_a adc_dat_a_i

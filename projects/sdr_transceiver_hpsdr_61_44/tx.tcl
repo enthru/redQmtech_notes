@@ -69,7 +69,7 @@ cell xilinx.com:ip:fir_compiler fir_0 {
   NUMBER_CHANNELS 4
   NUMBER_PATHS 1
   SAMPLE_FREQUENCY 0.048
-  CLOCK_FREQUENCY 122.88
+  CLOCK_FREQUENCY 61.44
   OUTPUT_ROUNDING_MODE Convergent_Rounding_to_Even
   OUTPUT_WIDTH 25
   M_DATA_HAS_TREADY true
@@ -201,9 +201,9 @@ for {set i 0} {$i <= 3} {incr i} {
     INPUT_DATA_WIDTH.VALUE_SRC USER
     FILTER_TYPE Interpolation
     NUMBER_OF_STAGES 6
-    FIXED_OR_INITIAL_RATE 1280
+    FIXED_OR_INITIAL_RATE 640
     INPUT_SAMPLE_FREQUENCY 0.096
-    CLOCK_FREQUENCY 122.88
+    CLOCK_FREQUENCY 61.44
     INPUT_DATA_WIDTH 24
     QUANTIZATION Truncation
     OUTPUT_DATA_WIDTH 24
@@ -238,7 +238,7 @@ cell pavel-demin:user:axis_constant phase_0 {
 
 # Create dds_compiler
 cell xilinx.com:ip:dds_compiler dds_0 {
-  DDS_CLOCK_RATE 122.88
+  DDS_CLOCK_RATE 61.44
   SPURIOUS_FREE_DYNAMIC_RANGE 138
   FREQUENCY_RESOLUTION 0.2
   PHASE_INCREMENT Streaming

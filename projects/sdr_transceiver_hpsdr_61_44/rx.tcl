@@ -47,7 +47,7 @@ for {set i 0} {$i <= 1} {incr i} {
 
   # Create dds_compiler
   cell xilinx.com:ip:dds_compiler dds_$i {
-    DDS_CLOCK_RATE 122.88
+    DDS_CLOCK_RATE 61.44
     SPURIOUS_FREE_DYNAMIC_RANGE 138
     FREQUENCY_RESOLUTION 0.2
     PHASE_INCREMENT Streaming
@@ -80,7 +80,7 @@ cell pavel-demin:user:axis_constant phase_2 {
 
 # Create dds_compiler
 cell xilinx.com:ip:dds_compiler dds_2 {
-  DDS_CLOCK_RATE 122.88
+  DDS_CLOCK_RATE 61.44
   SPURIOUS_FREE_DYNAMIC_RANGE 138
   FREQUENCY_RESOLUTION 0.2
   PHASE_INCREMENT Streaming
@@ -165,11 +165,11 @@ for {set i 0} {$i <= 9} {incr i} {
     FILTER_TYPE Decimation
     NUMBER_OF_STAGES 6
     SAMPLE_RATE_CHANGES Programmable
-    MINIMUM_RATE 160
-    MAXIMUM_RATE 1280
-    FIXED_OR_INITIAL_RATE 1280
-    INPUT_SAMPLE_FREQUENCY 122.88
-    CLOCK_FREQUENCY 122.88
+    MINIMUM_RATE 80
+    MAXIMUM_RATE 640
+    FIXED_OR_INITIAL_RATE 640
+    INPUT_SAMPLE_FREQUENCY 61.44
+    CLOCK_FREQUENCY 61.44
     INPUT_DATA_WIDTH 24
     QUANTIZATION Truncation
     OUTPUT_DATA_WIDTH 32
@@ -229,7 +229,7 @@ cell xilinx.com:ip:fir_compiler fir_0 {
   NUMBER_CHANNELS 10
   NUMBER_PATHS 1
   SAMPLE_FREQUENCY 0.768
-  CLOCK_FREQUENCY 122.88
+  CLOCK_FREQUENCY 61.44
   OUTPUT_ROUNDING_MODE Convergent_Rounding_to_Even
   OUTPUT_WIDTH 26
   HAS_ARESETN true
