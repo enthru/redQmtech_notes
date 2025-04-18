@@ -48,9 +48,9 @@ module axis_red_pitaya_dac #
     else
     begin
       int_dat_a_reg <= {int_dat_a_wire[DAC_DATA_WIDTH-1], ~int_dat_a_wire[DAC_DATA_WIDTH-2:0]};
-      //as I'm using dac904e but not ready to disable interleave mode - just always send zeroes for second dac
+      //as I'm using dac904e but not ready to disable interleave mode - just sending the same data
       //int_dat_b_reg <= {int_dat_b_wire[DAC_DATA_WIDTH-1], ~int_dat_b_wire[DAC_DATA_WIDTH-2:0]};
-      int_dat_b_reg <= {(DAC_DATA_WIDTH){1'b0}}; 
+      int_dat_b_reg <= {int_dat_a_wire[DAC_DATA_WIDTH-1], ~int_dat_a_wire[DAC_DATA_WIDTH-2:0]}; 
     end
     int_rst_reg <= {int_rst_reg[0], ~locked | ~s_axis_tvalid};
   end
