@@ -67,9 +67,7 @@ cell pavel-demin:user:axi_hub hub_0 {
 # ADC
 
 # Create axis_red_pitaya_adc
-cell pavel-demin:user:axis_red_pitaya_adc adc_0 {
-  ADC_DATA_WIDTH 16
-} {
+cell pavel-demin:user:axis_red_pitaya_adc adc_0 {} {
   aclk pll_0/clk_out1
   adc_dat_a adc_dat_a_i
   adc_dat_b adc_dat_b_i
