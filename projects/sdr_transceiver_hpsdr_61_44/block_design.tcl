@@ -3,7 +3,7 @@ cell xilinx.com:ip:clk_wiz pll_0 {
   PRIMITIVE PLL
   PRIM_IN_FREQ.VALUE_SRC USER
   PRIM_IN_FREQ 61.44
-  PRIM_SOURCE Single_ended_clock_capable_pin
+  PRIM_SOURCE Differential_clock_capable_pin
   CLKOUT1_USED true
   CLKOUT1_REQUESTED_OUT_FREQ 61.44
   CLKOUT2_USED true
@@ -11,7 +11,8 @@ cell xilinx.com:ip:clk_wiz pll_0 {
   CLKOUT2_REQUESTED_PHASE 90
   USE_RESET false
 } {
-  clk_in1 adc_clk_i
+  clk_in1_p adc_clk_p_i
+  clk_in1_n adc_clk_n_i
 }
 
 # Create processing_system7
@@ -66,11 +67,20 @@ cell pavel-demin:user:axi_hub hub_0 {
 
 # ADC
 
+# LVDS data buffer for adc
+cell xilinx.com:ip:util_ds_buf ibufds_a {
+  C_BUF_TYPE IBUFDS
+  C_SIZE 16
+} {
+  IBUF_DS_P [get_bd_ports adc_dat_p_i]
+  IBUF_DS_N [get_bd_ports adc_dat_n_i]
+
+}
+
 # Create axis_red_pitaya_adc
 cell pavel-demin:user:axis_red_pitaya_adc adc_0 {} {
   aclk pll_0/clk_out1
-  adc_dat_a adc_dat_a_i
-  adc_dat_b adc_dat_b_i
+  adc_dat_a ibufds_a/IBUF_OUT
   adc_csn adc_csn_o
 }
 

@@ -1,66 +1,66 @@
-
-# set_property CFGBVS VCCO [current_design]
-# set_property CONFIG_VOLTAGE 3.3 [current_design]
-
 ### ADC
 
 # data
 
-set_property IOSTANDARD LVCMOS33 [get_ports {adc_dat_a_i[*]}]
-set_property IOB TRUE [get_ports {adc_dat_a_i[*]}]
+set_property IOSTANDARD LVDS_25 [get_ports {adc_dat_p_i[*]}]
+set_property IOSTANDARD LVDS_25 [get_ports {adc_dat_n_i[*]}]
 
-set_property PACKAGE_PIN U22 [get_ports {adc_dat_a_i[0]}]
-set_property PACKAGE_PIN T22 [get_ports {adc_dat_a_i[1]}]
-set_property PACKAGE_PIN V20 [get_ports {adc_dat_a_i[2]}]
-set_property PACKAGE_PIN U20 [get_ports {adc_dat_a_i[3]}]
-set_property PACKAGE_PIN U21 [get_ports {adc_dat_a_i[4]}]
-set_property PACKAGE_PIN T21 [get_ports {adc_dat_a_i[5]}]
-set_property PACKAGE_PIN W22 [get_ports {adc_dat_a_i[6]}]
-set_property PACKAGE_PIN V22 [get_ports {adc_dat_a_i[7]}]
-set_property PACKAGE_PIN W21 [get_ports {adc_dat_a_i[8]}]
-set_property PACKAGE_PIN W20 [get_ports {adc_dat_a_i[9]}]
-set_property PACKAGE_PIN V19 [get_ports {adc_dat_a_i[10]}]
-set_property PACKAGE_PIN V18 [get_ports {adc_dat_a_i[11]}]
-set_property PACKAGE_PIN AB22 [get_ports {adc_dat_a_i[12]}]
-set_property PACKAGE_PIN AA22 [get_ports {adc_dat_a_i[13]}]
-set_property PACKAGE_PIN AB21 [get_ports {adc_dat_a_i[14]}]
-set_property PACKAGE_PIN AA21 [get_ports {adc_dat_a_i[15]}]
+set_property DIFF_TERM TRUE [get_ports {adc_dat_p_i[*]}]
+set_property DIFF_TERM TRUE [get_ports {adc_dat_n_i[*]}]
 
-set_property IOSTANDARD LVCMOS33 [get_ports {adc_dat_b_i[*]}]
-set_property IOB TRUE [get_ports {adc_dat_b_i[*]}]
+set_property PACKAGE_PIN T22 [get_ports {adc_dat_p_i[0]}]
+set_property PACKAGE_PIN U22 [get_ports {adc_dat_n_i[0]}]
+set_property PACKAGE_PIN U20 [get_ports {adc_dat_p_i[1]}]
+set_property PACKAGE_PIN V20 [get_ports {adc_dat_n_i[1]}]
+set_property PACKAGE_PIN T21 [get_ports {adc_dat_p_i[2]}]
+set_property PACKAGE_PIN U21 [get_ports {adc_dat_n_i[2]}]
+set_property PACKAGE_PIN V22 [get_ports {adc_dat_p_i[3]}]
+set_property PACKAGE_PIN W22 [get_ports {adc_dat_n_i[3]}]
+set_property PACKAGE_PIN W20 [get_ports {adc_dat_p_i[4]}]
+set_property PACKAGE_PIN W21 [get_ports {adc_dat_n_i[4]}]
+set_property PACKAGE_PIN V18 [get_ports {adc_dat_p_i[5]}]
+set_property PACKAGE_PIN V19 [get_ports {adc_dat_n_i[5]}]
+set_property PACKAGE_PIN AA22 [get_ports {adc_dat_p_i[6]}]
+set_property PACKAGE_PIN AB22 [get_ports {adc_dat_n_i[6]}]
+set_property PACKAGE_PIN AA21 [get_ports {adc_dat_p_i[7]}]
+set_property PACKAGE_PIN AB21 [get_ports {adc_dat_n_i[7]}]
+set_property PACKAGE_PIN Y20 [get_ports {adc_dat_p_i[8]}]
+set_property PACKAGE_PIN Y21 [get_ports {adc_dat_n_i[8]}]
+set_property PACKAGE_PIN AB19 [get_ports {adc_dat_p_i[9]}]
+set_property PACKAGE_PIN AB20 [get_ports {adc_dat_n_i[9]}]
+set_property PACKAGE_PIN AA17 [get_ports {adc_dat_p_i[10]}]
+set_property PACKAGE_PIN AB17 [get_ports {adc_dat_n_i[10]}]
+set_property PACKAGE_PIN AA16 [get_ports {adc_dat_p_i[11]}]
+set_property PACKAGE_PIN AB16 [get_ports {adc_dat_n_i[11]}]
+set_property PACKAGE_PIN AB14 [get_ports {adc_dat_p_i[12]}]
+set_property PACKAGE_PIN AB15 [get_ports {adc_dat_n_i[12]}]
+set_property PACKAGE_PIN Y18 [get_ports {adc_dat_p_i[13]}]
+set_property PACKAGE_PIN AA18 [get_ports {adc_dat_n_i[13]}]
+set_property PACKAGE_PIN W17 [get_ports {adc_dat_p_i[14]}]
+set_property PACKAGE_PIN W18 [get_ports {adc_dat_n_i[14]}]
+set_property PACKAGE_PIN W16 [get_ports {adc_dat_p_i[15]}]
+set_property PACKAGE_PIN Y16 [get_ports {adc_dat_n_i[15]}]
 
-set_property PACKAGE_PIN Y21 [get_ports {adc_dat_b_i[0]}]
-set_property PACKAGE_PIN Y20 [get_ports {adc_dat_b_i[1]}]
-set_property PACKAGE_PIN AB20 [get_ports {adc_dat_b_i[2]}]
-set_property PACKAGE_PIN AB19 [get_ports {adc_dat_b_i[3]}]
-set_property PACKAGE_PIN AB17 [get_ports {adc_dat_b_i[4]}]
-set_property PACKAGE_PIN AA17 [get_ports {adc_dat_b_i[5]}]
-set_property PACKAGE_PIN AB16 [get_ports {adc_dat_b_i[6]}]
-set_property PACKAGE_PIN AA16 [get_ports {adc_dat_b_i[7]}]
-set_property PACKAGE_PIN AB15 [get_ports {adc_dat_b_i[8]}]
-set_property PACKAGE_PIN AB14 [get_ports {adc_dat_b_i[9]}]
-set_property PACKAGE_PIN AA18 [get_ports {adc_dat_b_i[10]}]
-set_property PACKAGE_PIN Y18 [get_ports {adc_dat_b_i[11]}]
-set_property PACKAGE_PIN W18 [get_ports {adc_dat_b_i[12]}]
-set_property PACKAGE_PIN W17 [get_ports {adc_dat_b_i[13]}]
-set_property PACKAGE_PIN Y16 [get_ports {adc_dat_b_i[14]}]
-set_property PACKAGE_PIN W16 [get_ports {adc_dat_b_i[15]}]
+# clock
+set_property IOSTANDARD LVDS_25 [get_ports adc_clk_p_i]
+set_property IOSTANDARD LVDS_25 [get_ports adc_clk_n_i]
 
+set_property DIFF_TERM TRUE [get_ports adc_clk_p_i]
+set_property DIFF_TERM TRUE [get_ports adc_clk_n_i]
 
-# clock input
-#set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets {system_i/pll_0/inst/clk_in1_system_pll_0_0}]
-set_property IOSTANDARD LVCMOS33 [get_ports adc_clk_i]
-set_property PACKAGE_PIN Y19 [get_ports adc_clk_i]
+set_property PACKAGE_PIN Y19 [get_ports adc_clk_p_i]
+set_property PACKAGE_PIN AA19 [get_ports adc_clk_n_i]
+
 
 # clock duty cycle stabilizer (CSn)
 
-set_property IOSTANDARD LVCMOS33 [get_ports adc_csn_o]
+set_property IOSTANDARD LVCMOS25 [get_ports adc_csn_o]
 set_property PACKAGE_PIN E21    [get_ports adc_csn_o]
 set_property SLEW FAST [get_ports adc_csn_o]
 set_property DRIVE 8 [get_ports adc_csn_o]
 
 ### DAC
-set_property IOSTANDARD LVCMOS33 [get_ports {dac_dat_o[*]}]
+set_property IOSTANDARD LVCMOS25 [get_ports {dac_dat_o[*]}]
 set_property SLEW SLOW [get_ports {dac_dat_o[*]}]
 set_property DRIVE 4 [get_ports {dac_dat_o[*]}]
 # set_property IOB TRUE [get_ports {dac_dat_o[*]}]
@@ -96,7 +96,7 @@ set_property PACKAGE_PIN A18 [get_ports {dac_dat_o[13]}]
 #set_property PACKAGE_PIN C19 [get_ports {dac_dat_o[13]}]
 
 # DAC stuff
-set_property IOSTANDARD LVCMOS33 [get_ports dac_*_o]
+set_property IOSTANDARD LVCMOS25 [get_ports dac_*_o]
 set_property SLEW FAST [get_ports dac_*_o]
 set_property DRIVE 8 [get_ports dac_*_o]
 
@@ -107,8 +107,8 @@ set_property PACKAGE_PIN A17 [get_ports dac_clk_o]
 set_property PACKAGE_PIN K19 [get_ports dac_rst_o]
 
 ### Expansion connector
-set_property IOSTANDARD LVCMOS33 [get_ports {exp_p_tri_io[*]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {exp_n_tri_io[*]}]
+set_property IOSTANDARD LVCMOS25 [get_ports {exp_p_tri_io[*]}]
+set_property IOSTANDARD LVCMOS25 [get_ports {exp_n_tri_io[*]}]
 set_property SLEW FAST [get_ports {exp_p_tri_io[*]}]
 set_property SLEW FAST [get_ports {exp_n_tri_io[*]}]
 set_property DRIVE 8 [get_ports {exp_p_tri_io[*]}]
@@ -116,8 +116,8 @@ set_property DRIVE 8 [get_ports {exp_n_tri_io[*]}]
 
 set_property PACKAGE_PIN D22 [get_ports {exp_p_tri_io[0]}]
 set_property PACKAGE_PIN C22 [get_ports {exp_n_tri_io[0]}]
-#E21
-set_property PACKAGE_PIN AA19 [get_ports {exp_p_tri_io[1]}]
+#Preamp
+set_property PACKAGE_PIN AA14 [get_ports {exp_p_tri_io[1]}]
 set_property PACKAGE_PIN D21 [get_ports {exp_n_tri_io[1]}]
 set_property PACKAGE_PIN E19 [get_ports {exp_p_tri_io[2]}]
 set_property PACKAGE_PIN E20 [get_ports {exp_n_tri_io[2]}]
@@ -138,7 +138,7 @@ set_property PULLTYPE PULLUP [get_ports {exp_n_tri_io[1]}]
 set_property PULLTYPE PULLUP [get_ports {exp_n_tri_io[2]}]
 set_property PULLTYPE PULLUP [get_ports {exp_n_tri_io[3]}]
 
-set_property IOSTANDARD LVCMOS33 [get_ports {exp_n_alex[*]}]
+set_property IOSTANDARD LVCMOS25 [get_ports {exp_n_alex[*]}]
 set_property SLEW FAST [get_ports {exp_n_alex[*]}]
 set_property DRIVE 8 [get_ports {exp_n_alex[*]}]
 
