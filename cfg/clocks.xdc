@@ -1,2 +1,2 @@
-set_input_delay -max 1.000 -clock adc_clk_i [get_ports adc_dat_a_i[*]]
-set_input_delay -max 1.000 -clock adc_clk_i [get_ports adc_dat_b_i[*]]
+set_output_delay -clock dac_clk_o -max 2.5 [get_ports dac_dat_o[*]]
+set_output_delay -clock dac_clk_o -min -0.5 [get_ports dac_dat_o[*]]

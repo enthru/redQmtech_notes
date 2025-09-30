@@ -6,9 +6,10 @@ cell xilinx.com:ip:clk_wiz pll_0 {
   PRIM_SOURCE Differential_clock_capable_pin
   CLKOUT1_USED true
   CLKOUT1_REQUESTED_OUT_FREQ 61.44
+  CLKOUT1_REQUESTED_PHASE 180
   CLKOUT2_USED true
   CLKOUT2_REQUESTED_OUT_FREQ 61.44
-  CLKOUT2_REQUESTED_PHASE 90
+  CLKOUT2_REQUESTED_PHASE 180
   USE_RESET false
 } {
   clk_in1_p adc_clk_p_i

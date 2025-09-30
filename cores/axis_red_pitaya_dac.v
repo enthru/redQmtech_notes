@@ -27,13 +27,14 @@ module axis_red_pitaya_dac #
 
   assign data_wire = s_axis_tdata[DAC_DATA_WIDTH-1:0];
 
-  always @(posedge aclk) begin
-    if (~locked || ~s_axis_tvalid) begin
-      data_reg <= {DAC_DATA_WIDTH{1'b0}};
-    end else begin
-      data_reg <= {data_wire[DAC_DATA_WIDTH-1], ~data_wire[DAC_DATA_WIDTH-2:0]};
-    end
+always @(posedge aclk) begin
+  if (~locked || ~s_axis_tvalid) begin
+    data_reg <= {DAC_DATA_WIDTH{1'b0}};
+  end else begin
+    data_reg <= $signed(data_wire) + (1 << (DAC_DATA_WIDTH-1));
   end
+end
+
 
   always @(posedge aclk) begin
     dac_dat <= data_reg;
