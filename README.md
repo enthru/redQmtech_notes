@@ -14,7 +14,5 @@ Pins assignment can be found in this file - cfg/ports.xdc
 **Some links:**
 <br />
 <br />
-ADC board - https://github.com/enthru/qmTech_adc
-<br />
 Some history of the project - https://enthru.net/?tag=qmtech
 
