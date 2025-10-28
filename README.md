@@ -15,4 +15,5 @@ Pins assignment can be found in this file - cfg/ports.xdc
 <br />
 <br />
 Some history of the project - https://enthru.net/?tag=qmtech
+<br />
 EasyEda project -  https://oshwlab.com/neuroworker/ltc2208_lvds
