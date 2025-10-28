@@ -49,7 +49,7 @@ for {set i 0} {$i <= 1} {incr i} {
   cell xilinx.com:ip:dds_compiler dds_$i {
     DDS_CLOCK_RATE 61.44
     SPURIOUS_FREE_DYNAMIC_RANGE 138
-    FREQUENCY_RESOLUTION 0.2
+    FREQUENCY_RESOLUTION 0.1
     PHASE_INCREMENT Streaming
     HAS_ARESETN true
     HAS_PHASE_OUT false
@@ -82,7 +82,7 @@ cell pavel-demin:user:axis_constant phase_2 {
 cell xilinx.com:ip:dds_compiler dds_2 {
   DDS_CLOCK_RATE 61.44
   SPURIOUS_FREE_DYNAMIC_RANGE 138
-  FREQUENCY_RESOLUTION 0.2
+  FREQUENCY_RESOLUTION 0.1
   PHASE_INCREMENT Streaming
   HAS_PHASE_OUT false
   PHASE_WIDTH 30

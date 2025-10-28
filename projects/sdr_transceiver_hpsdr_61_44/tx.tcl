@@ -71,7 +71,7 @@ cell xilinx.com:ip:fir_compiler fir_0 {
   SAMPLE_FREQUENCY 0.048
   CLOCK_FREQUENCY 61.44
   OUTPUT_ROUNDING_MODE Convergent_Rounding_to_Even
-  OUTPUT_WIDTH 25
+  OUTPUT_WIDTH 26
   M_DATA_HAS_TREADY true
   HAS_ARESETN true
 } {
@@ -240,7 +240,7 @@ cell pavel-demin:user:axis_constant phase_0 {
 cell xilinx.com:ip:dds_compiler dds_0 {
   DDS_CLOCK_RATE 61.44
   SPURIOUS_FREE_DYNAMIC_RANGE 138
-  FREQUENCY_RESOLUTION 0.2
+  FREQUENCY_RESOLUTION 0.1
   PHASE_INCREMENT Streaming
   HAS_ARESETN true
   HAS_PHASE_OUT false

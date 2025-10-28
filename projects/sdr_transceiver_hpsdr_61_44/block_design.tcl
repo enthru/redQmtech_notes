@@ -342,8 +342,8 @@ wire codec/bram_0/BRAM_PORTA hub_0/B05_BRAM
 
 # RX 1
 
-module rx_1 {
-  source projects/sdr_receiver_122_88/rx.tcl
-} {
-  hub_0/S_AXI ps_0/M_AXI_GP1
-}
+#module rx_1 {
+#  source projects/sdr_receiver_122_88/rx.tcl
+#} {
+#  hub_0/S_AXI ps_0/M_AXI_GP1
+#}
