@@ -51,14 +51,6 @@ set_property DIFF_TERM TRUE [get_ports adc_clk_n_i]
 set_property PACKAGE_PIN Y19 [get_ports adc_clk_p_i]
 set_property PACKAGE_PIN AA19 [get_ports adc_clk_n_i]
 
-
-# clock duty cycle stabilizer (CSn)
-
-set_property IOSTANDARD LVCMOS25 [get_ports adc_csn_o]
-set_property PACKAGE_PIN E21    [get_ports adc_csn_o]
-set_property SLEW FAST [get_ports adc_csn_o]
-set_property DRIVE 8 [get_ports adc_csn_o]
-
 ### DAC
 set_property IOSTANDARD LVCMOS25 [get_ports {dac_dat_o[*]}]
 set_property SLEW SLOW [get_ports {dac_dat_o[*]}]
@@ -100,11 +92,8 @@ set_property IOSTANDARD LVCMOS25 [get_ports dac_*_o]
 set_property SLEW FAST [get_ports dac_*_o]
 set_property DRIVE 8 [get_ports dac_*_o]
 
-set_property PACKAGE_PIN J21 [get_ports dac_wrt_o]
-set_property PACKAGE_PIN J22 [get_ports dac_sel_o]
 #Clock
 set_property PACKAGE_PIN A17 [get_ports dac_clk_o]
-set_property PACKAGE_PIN K19 [get_ports dac_rst_o]
 
 ### Expansion connector
 set_property IOSTANDARD LVCMOS25 [get_ports {exp_p_tri_io[*]}]
@@ -132,7 +121,6 @@ set_property PACKAGE_PIN H20 [get_ports {exp_n_tri_io[6]}]
 set_property PACKAGE_PIN H22 [get_ports {exp_p_tri_io[7]}]
 set_property PACKAGE_PIN G22 [get_ports {exp_n_tri_io[7]}]
 
-#BCD Codes
 set_property PULLTYPE PULLUP [get_ports {exp_n_tri_io[0]}]
 set_property PULLTYPE PULLUP [get_ports {exp_n_tri_io[1]}]
 set_property PULLTYPE PULLUP [get_ports {exp_n_tri_io[2]}]

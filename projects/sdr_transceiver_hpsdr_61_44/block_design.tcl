@@ -19,7 +19,7 @@ cell xilinx.com:ip:clk_wiz pll_0 {
 
 # Create processing_system7
 cell xilinx.com:ip:processing_system7 ps_0 {
-  PCW_IMPORT_BOARD_PRESET cfg/red_pitaya.xml
+  PCW_IMPORT_BOARD_PRESET cfg/qmtech.xml
   PCW_USE_M_AXI_GP1 1
 } {
   M_AXI_GP0_ACLK pll_0/clk_out1
@@ -83,7 +83,6 @@ cell xilinx.com:ip:util_ds_buf ibufds_a {
 cell pavel-demin:user:axis_red_pitaya_adc adc_0 {} {
   aclk pll_0/clk_out1
   adc_dat_a ibufds_a/IBUF_OUT
-  adc_csn adc_csn_o
 }
 
 # DAC
