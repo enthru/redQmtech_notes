@@ -502,14 +502,14 @@ static uint16_t get_be16(const uint8_t *p)
    when general byte 37 bit 3 is set, which every current host does, and as
    plain Hz otherwise.
 
-   The receive LOs run at 61.44 MHz and the transmit LO at 122.88 MHz - the
-   DAC side of this board was moved to the doubled clock - and both have a 30
-   bit accumulator, so against a 122.88 MHz phase word both conversions are
-   exact shifts: one bit for receive, two for transmit.
-
-   NOTE: the protocol 1 server in this project divides by 61.44e6 for the
-   transmit LO as well, which after the clock was doubled puts the transmit
-   carrier at twice the requested frequency.  This does not carry that over. */
+   Both LOs take the same increment, phase / 2, even though the transmit LO
+   is clocked at 122.88 MHz and the receive LOs at 61.44 MHz.  The phase
+   accumulator width is not the PHASE_WIDTH line in the tcl, it is derived
+   from DDS_CLOCK_RATE and FREQUENCY_RESOLUTION, so the transmit DDS
+   (122.88 MHz, 0.1 Hz) accumulates in 31 bits where the receive DDSs
+   (61.44 MHz, 0.1 Hz) use 30.  The doubled clock and the extra bit cancel:
+   f / 61.44e6 * 2^30 is the same number as f / 122.88e6 * 2^31.  This is the
+   increment the protocol 1 server wrote and it is correct on air. */
 
 static uint32_t phase_to_hz(uint32_t v)
 {
@@ -525,8 +525,8 @@ static uint32_t phase_to_rx_inc(uint32_t v)
 
 static uint32_t phase_to_tx_inc(uint32_t v)
 {
-  if(phase_words) return v >> 2;
-  return (uint32_t)floor((double)v / 122.88e6 * (1 << 30) + 0.5);
+  if(phase_words) return v >> 1;
+  return (uint32_t)floor((double)v / 61.44e6 * (1 << 30) + 0.5);
 }
 
 /* ------------------------------------------------------- RX data path */
@@ -1503,8 +1503,8 @@ int main(int argc, char *argv[])
   /* set default rx sample rate */
   *rx_rate = 640;
 
-  /* set default tx phase increment, transmit LO is clocked at 122.88 MHz */
-  *tx_freq = (uint32_t)floor(600000 / 122.88e6 * (1 << 30) + 0.5);
+  /* set default tx phase increment */
+  *tx_freq = (uint32_t)floor(600000 / 61.44e6 * (1 << 30) + 0.5);
 
   /* set tx ramp */
   size = 1001;
