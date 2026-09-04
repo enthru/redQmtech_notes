@@ -500,8 +500,16 @@ static uint16_t get_be16(const uint8_t *p)
 
 /* Protocol 2 carries tuning as a 32 bit phase word referenced to 122.88 MHz
    when general byte 37 bit 3 is set, which every current host does, and as
-   plain Hz otherwise.  The gateware's accumulator is 30 bits at 61.44 MHz, so
-   the phase word conversion is exact: inc = phase / 2. */
+   plain Hz otherwise.
+
+   The receive LOs run at 61.44 MHz and the transmit LO at 122.88 MHz - the
+   DAC side of this board was moved to the doubled clock - and both have a 30
+   bit accumulator, so against a 122.88 MHz phase word both conversions are
+   exact shifts: one bit for receive, two for transmit.
+
+   NOTE: the protocol 1 server in this project divides by 61.44e6 for the
+   transmit LO as well, which after the clock was doubled puts the transmit
+   carrier at twice the requested frequency.  This does not carry that over. */
 
 static uint32_t phase_to_hz(uint32_t v)
 {
@@ -509,10 +517,16 @@ static uint32_t phase_to_hz(uint32_t v)
   return (uint32_t)floor((double)v * 122.88e6 / 4294967296.0 + 0.5);
 }
 
-static uint32_t phase_to_inc(uint32_t v)
+static uint32_t phase_to_rx_inc(uint32_t v)
 {
   if(phase_words) return v >> 1;
   return (uint32_t)floor((double)v / 61.44e6 * (1 << 30) + 0.5);
+}
+
+static uint32_t phase_to_tx_inc(uint32_t v)
+{
+  if(phase_words) return v >> 2;
+  return (uint32_t)floor((double)v / 122.88e6 * (1 << 30) + 0.5);
 }
 
 /* ------------------------------------------------------- RX data path */
@@ -678,7 +692,7 @@ static void process_high_priority(uint8_t *buffer)
     freq = phase_to_hz(value);
     if(freq > freq_max) continue;
     rx_phase[i] = value;
-    rx_freq[i] = phase_to_inc(value);
+    rx_freq[i] = phase_to_rx_inc(value);
     if(i > 1) continue;
     /* freq_data[1] and [2] are the two receive frequencies the filter and
        band switching code works from, as under protocol 1. */
@@ -714,7 +728,7 @@ static void process_high_priority(uint8_t *buffer)
     if(freq <= freq_max)
     {
       tx_phase = value;
-      *tx_freq = phase_to_inc(value);
+      *tx_freq = phase_to_tx_inc(value);
       if(freq_data[0] != freq)
       {
         freq_data[0] = freq;
@@ -1489,8 +1503,8 @@ int main(int argc, char *argv[])
   /* set default rx sample rate */
   *rx_rate = 640;
 
-  /* set default tx phase increment */
-  *tx_freq = (uint32_t)floor(600000 / 61.44e6 * (1 << 30) + 0.5);
+  /* set default tx phase increment, transmit LO is clocked at 122.88 MHz */
+  *tx_freq = (uint32_t)floor(600000 / 122.88e6 * (1 << 30) + 0.5);
 
   /* set tx ramp */
   size = 1001;
