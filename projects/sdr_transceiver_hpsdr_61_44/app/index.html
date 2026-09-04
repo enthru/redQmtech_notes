@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>SDR transceiver compatible with HPSDR</title>
+<title>SDR transceiver compatible with HPSDR protocol 2</title>
 <link rel="stylesheet" href="/css/main.css">
 <link rel="stylesheet" href="/css/pygments.css">
 </head>
@@ -17,21 +17,18 @@
 </div>
 </div>
 <div id="content">
-<h1>SDR transceiver compatible with HPSDR</h1>
+<h1>SDR transceiver compatible with HPSDR protocol 2</h1>
 <p>The SDR transceiver compatible with HPSDR is ready.</p>
-<p>Now you can run the SDR programs that support the <a href="https://openhpsdr.org" target="_blank">HPSDR</a>/<a href="https://openhpsdr.org/metis.php" target="_blank">Metis</a> protocol.</p>
-<p>More details about this application can be found at <a href="https://pavel-demin.github.io/red-pitaya-notes/sdr-transceiver-hpsdr-122-88/" target="_blank">this link</a>.</p>
+<p>Now you can run the SDR programs that support the <a href="https://openhpsdr.org" target="_blank">openHPSDR</a> protocol 2, the one built on UDP ports 1024 to 1029 and 1035 upwards.  Programs that speak only the original Metis protocol will not find this application.</p>
+<p>The board reports itself as a Hermes with three DDCs.  All of them run at the sample rate the host asks for on the lowest numbered one, because the gateware has a single decimation register; rates from 48 kHz to 1536 kHz are available.</p>
 <h2>SDR programs</h2>
-<p>Here is a list of the SDR programs that are known to work with this SDR transceiver:</p>
+<p>Here is a list of the SDR programs that speak protocol 2:</p>
 <ul>
 <li>
-<p><a href="https://openhpsdr.org/wiki/index.php?title=PowerSDR" target="_blank">PowerSDR mRX PS</a> that can be downloaded from <a href="https://github.com/TAPR/OpenHPSDR-PowerSDR/releases" target="_blank">this link</a></p>
+<p><a href="https://github.com/ramdor/Thetis" target="_blank">Thetis</a></p>
 </li>
 <li>
-<p><a href="https://james.ahlstrom.name/quisk" target="_blank">QUISK</a> with the hermes/quisk_conf.py configuration file</p>
-</li>
-<li>
-<p><a href="https://napan.ca/ghpsdr3" target="_blank">ghpsdr3-alex</a> client-server distributed system</p>
+<p><a href="https://github.com/dl1ycf/pihpsdr" target="_blank">piHPSDR</a></p>
 </li>
 </ul>
 </div>

@@ -1,7 +1,11 @@
 library(signal)
 
 # CIC filter parameters
-R <- 1280                      # Decimation factor
+R <- 320                       # Interpolation factor
+# The compensation term below changes by less than 0.1 % over the whole range
+# of rates this gateware uses, so the coefficients in tx.tcl were not
+# regenerated when the DUC moved from 48 kHz to the 192 kHz protocol 2 asks
+# for and R went from 1280 to 320.
 M <- 1                         # Differential delay
 N <- 6                         # Number of stages
 

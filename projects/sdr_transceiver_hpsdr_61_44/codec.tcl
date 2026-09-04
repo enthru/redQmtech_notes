@@ -1,30 +1,30 @@
 # Create port_slicer
-cell pavel-demin:user:port_slicer slice_0 {
+cell port_slicer slice_0 {
   DIN_WIDTH 8 DIN_FROM 1 DIN_TO 1
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer slice_1 {
+cell port_slicer slice_1 {
   DIN_WIDTH 8 DIN_FROM 2 DIN_TO 2
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer slice_2 {
+cell port_slicer slice_2 {
   DIN_WIDTH 64 DIN_FROM 31 DIN_TO 0
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer slice_3 {
+cell port_slicer slice_3 {
   DIN_WIDTH 64 DIN_FROM 47 DIN_TO 32
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer slice_4 {
+cell port_slicer slice_4 {
   DIN_WIDTH 64 DIN_FROM 63 DIN_TO 48
 }
 
 # Create axis_fifo
-cell pavel-demin:user:axis_fifo fifo_0 {
+cell axis_fifo fifo_0 {
   S_AXIS_TDATA_WIDTH 32
   M_AXIS_TDATA_WIDTH 32
   WRITE_DEPTH 2048
@@ -61,7 +61,7 @@ cell xilinx.com:ip:blk_mem_gen bram_0 {
 }
 
 # Create axis_keyer
-cell pavel-demin:user:axis_keyer keyer_0 {
+cell axis_keyer keyer_0 {
   AXIS_TDATA_WIDTH 16
   BRAM_DATA_WIDTH 16
   BRAM_ADDR_WIDTH 10
@@ -73,7 +73,7 @@ cell pavel-demin:user:axis_keyer keyer_0 {
 }
 
 # Create axis_constant
-cell pavel-demin:user:axis_constant phase_0 {
+cell axis_constant phase_0 {
   AXIS_TDATA_WIDTH 32
 } {
   cfg_data slice_2/dout
@@ -98,7 +98,7 @@ cell xilinx.com:ip:dds_compiler dds_0 {
 }
 
 # Create dsp48
-cell pavel-demin:user:dsp48 mult_0 {
+cell dsp48 mult_0 {
   A_WIDTH 16
   B_WIDTH 16
   P_WIDTH 24
@@ -109,7 +109,7 @@ cell pavel-demin:user:dsp48 mult_0 {
 }
 
 # Create dsp48
-cell pavel-demin:user:dsp48 mult_1 {
+cell dsp48 mult_1 {
   A_WIDTH 24
   B_WIDTH 16
   P_WIDTH 16
@@ -138,7 +138,7 @@ cell xilinx.com:ip:axis_broadcaster bcast_1 {
 }
 
 # Create axis_adder
-cell pavel-demin:user:axis_adder adder_0 {
+cell axis_adder adder_0 {
   AXIS_TDATA_WIDTH 16
   AXIS_TDATA_SIGNED TRUE
 } {
@@ -148,7 +148,7 @@ cell pavel-demin:user:axis_adder adder_0 {
 }
 
 # Create axis_adder
-cell pavel-demin:user:axis_adder adder_1 {
+cell axis_adder adder_1 {
   AXIS_TDATA_WIDTH 16
   AXIS_TDATA_SIGNED TRUE
 } {
@@ -170,7 +170,7 @@ cell  xilinx.com:ip:axis_combiner comb_0 {
 }
 
 # Create axis_i2s
-cell pavel-demin:user:axis_i2s i2s_0 {
+cell axis_i2s i2s_0 {
   AXIS_TDATA_WIDTH 32
 } {
   alex_flag slice_1/dout
@@ -193,7 +193,7 @@ cell xilinx.com:ip:axis_subset_converter subset_2 {
 }
 
 # Create axis_fifo
-cell pavel-demin:user:axis_fifo fifo_1 {
+cell axis_fifo fifo_1 {
   S_AXIS_TDATA_WIDTH 32
   M_AXIS_TDATA_WIDTH 32
   WRITE_DEPTH 1024

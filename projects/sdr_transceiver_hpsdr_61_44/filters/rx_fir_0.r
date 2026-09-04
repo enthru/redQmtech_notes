@@ -1,7 +1,10 @@
 library(signal)
 
 # CIC filter parameters
-R <- 160                       # Decimation factor
+R <- 160                       # Decimation factor, mid range
+# The CIC rate is programmable from 20 (1536 kHz) to 640 (48 kHz); the
+# compensation term is insensitive to R over that range, so one set of
+# coefficients serves every rate.
 M <- 1                         # Differential delay
 N <- 6                         # Number of stages
 

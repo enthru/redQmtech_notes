@@ -1,29 +1,29 @@
 # Create port_slicer
-cell pavel-demin:user:port_slicer slice_0 {
+cell port_slicer slice_0 {
   DIN_WIDTH 8 DIN_FROM 2 DIN_TO 2
 }
 
-cell pavel-demin:user:port_slicer slice_1 {
+cell port_slicer slice_1 {
   DIN_WIDTH 96 DIN_FROM 31 DIN_TO 0
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer slice_2 {
+cell port_slicer slice_2 {
   DIN_WIDTH 96 DIN_FROM 47 DIN_TO 32
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer slice_3 {
+cell port_slicer slice_3 {
   DIN_WIDTH 96 DIN_FROM 63 DIN_TO 48
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer slice_4 {
+cell port_slicer slice_4 {
   DIN_WIDTH 96 DIN_FROM 79 DIN_TO 64
 }
 
 # Create axis_fifo
-cell pavel-demin:user:axis_fifo fifo_0 {
+cell axis_fifo fifo_0 {
   S_AXIS_TDATA_WIDTH 32
   M_AXIS_TDATA_WIDTH 64
   WRITE_DEPTH 4096
@@ -68,7 +68,7 @@ cell xilinx.com:ip:fir_compiler fir_0 {
   INTERPOLATION_RATE 2
   NUMBER_CHANNELS 4
   NUMBER_PATHS 1
-  SAMPLE_FREQUENCY 0.048
+  SAMPLE_FREQUENCY 0.192
   CLOCK_FREQUENCY 61.44
   OUTPUT_ROUNDING_MODE Convergent_Rounding_to_Even
   OUTPUT_WIDTH 25
@@ -132,7 +132,7 @@ cell xilinx.com:ip:blk_mem_gen bram_0 {
 }
 
 # Create axis_keyer
-cell pavel-demin:user:axis_keyer keyer_0 {
+cell axis_keyer keyer_0 {
   AXIS_TDATA_WIDTH 32
   BRAM_DATA_WIDTH 32
   BRAM_ADDR_WIDTH 10
@@ -157,7 +157,7 @@ cell xilinx.com:ip:axis_subset_converter subset_2 {
 }
 
 # Create axis_selector
-cell pavel-demin:user:axis_selector sel_0 {
+cell axis_selector sel_0 {
   AXIS_TDATA_WIDTH 48
 } {
   S00_AXIS bcast_0/M00_AXIS
@@ -225,8 +225,8 @@ for {set i 0} {$i <= 3} {incr i} {
     INPUT_DATA_WIDTH.VALUE_SRC USER
     FILTER_TYPE Interpolation
     NUMBER_OF_STAGES 6
-    FIXED_OR_INITIAL_RATE 1280
-    INPUT_SAMPLE_FREQUENCY 0.096
+    FIXED_OR_INITIAL_RATE 320
+    INPUT_SAMPLE_FREQUENCY 0.384
     CLOCK_FREQUENCY 122.88
     INPUT_DATA_WIDTH 24
     QUANTIZATION Truncation
@@ -253,7 +253,7 @@ cell  xilinx.com:ip:axis_combiner comb_0 {
 }
 
 # Create axis_constant
-cell pavel-demin:user:axis_constant phase_0 {
+cell axis_constant phase_0 {
   AXIS_TDATA_WIDTH 32
 } {
   cfg_data slice_1/dout
@@ -278,7 +278,7 @@ cell xilinx.com:ip:dds_compiler dds_0 {
 }
 
 # Create axis_lfsr
-cell pavel-demin:user:axis_lfsr lfsr_0 {} {
+cell axis_lfsr lfsr_0 {} {
   aclk /pll_0/clk_out3
   aresetn /rst_0/peripheral_aresetn
 }
@@ -300,7 +300,7 @@ cell xilinx.com:ip:cmpy mult_0 {
 }
 
 # Create dsp48
-cell pavel-demin:user:dsp48 mult_1 {
+cell dsp48 mult_1 {
   A_WIDTH 24
   B_WIDTH 16
   P_WIDTH 16
@@ -311,7 +311,7 @@ cell pavel-demin:user:dsp48 mult_1 {
 }
 
 # Create dsp48
-cell pavel-demin:user:dsp48 mult_2 {
+cell dsp48 mult_2 {
   A_WIDTH 24
   B_WIDTH 16
   P_WIDTH 18
@@ -359,12 +359,12 @@ cell xilinx.com:ip:xlconcat concat_0 {
 for {set i 0} {$i <= 1} {incr i} {
 
   # Create port_slicer
-  cell pavel-demin:user:port_slicer slice_[expr $i + 5] {
+  cell port_slicer slice_[expr $i + 5] {
     DIN_WIDTH 96 DIN_FROM [expr $i + 80] DIN_TO [expr $i + 80]
   }
 
   # Create port_selector
-  cell pavel-demin:user:port_selector selector_$i {
+  cell port_selector selector_$i {
     DOUT_WIDTH 16
   } {
     cfg slice_[expr $i + 5]/dout
