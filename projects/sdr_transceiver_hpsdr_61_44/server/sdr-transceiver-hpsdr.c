@@ -502,14 +502,11 @@ static uint16_t get_be16(const uint8_t *p)
    when general byte 37 bit 3 is set, which every current host does, and as
    plain Hz otherwise.
 
-   Both LOs take the same increment, phase / 2, even though the transmit LO
-   is clocked at 122.88 MHz and the receive LOs at 61.44 MHz.  The phase
-   accumulator width is not the PHASE_WIDTH line in the tcl, it is derived
-   from DDS_CLOCK_RATE and FREQUENCY_RESOLUTION, so the transmit DDS
-   (122.88 MHz, 0.1 Hz) accumulates in 31 bits where the receive DDSs
-   (61.44 MHz, 0.1 Hz) use 30.  The doubled clock and the extra bit cancel:
-   f / 61.44e6 * 2^30 is the same number as f / 122.88e6 * 2^31.  This is the
-   increment the protocol 1 server wrote and it is correct on air. */
+   Both LOs take the same increment, phase / 2, which is the number the
+   protocol 1 server wrote (f / 61.44e6 * 2^30) and which is correct on air.
+   The transmit side runs in the 122.88 MHz domain, reached through the CDC
+   FIFOs in tx.tcl, and this increment already accounts for it - do not
+   "fix" it against the transmit clock. */
 
 static uint32_t phase_to_hz(uint32_t v)
 {
@@ -517,13 +514,7 @@ static uint32_t phase_to_hz(uint32_t v)
   return (uint32_t)floor((double)v * 122.88e6 / 4294967296.0 + 0.5);
 }
 
-static uint32_t phase_to_rx_inc(uint32_t v)
-{
-  if(phase_words) return v >> 1;
-  return (uint32_t)floor((double)v / 61.44e6 * (1 << 30) + 0.5);
-}
-
-static uint32_t phase_to_tx_inc(uint32_t v)
+static uint32_t phase_to_inc(uint32_t v)
 {
   if(phase_words) return v >> 1;
   return (uint32_t)floor((double)v / 61.44e6 * (1 << 30) + 0.5);
@@ -692,7 +683,7 @@ static void process_high_priority(uint8_t *buffer)
     freq = phase_to_hz(value);
     if(freq > freq_max) continue;
     rx_phase[i] = value;
-    rx_freq[i] = phase_to_rx_inc(value);
+    rx_freq[i] = phase_to_inc(value);
     if(i > 1) continue;
     /* freq_data[1] and [2] are the two receive frequencies the filter and
        band switching code works from, as under protocol 1. */
@@ -728,7 +719,7 @@ static void process_high_priority(uint8_t *buffer)
     if(freq <= freq_max)
     {
       tx_phase = value;
-      *tx_freq = phase_to_tx_inc(value);
+      *tx_freq = phase_to_inc(value);
       if(freq_data[0] != freq)
       {
         freq_data[0] = freq;

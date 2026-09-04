@@ -45,11 +45,8 @@ What the port needed, and what it costs:
   host asks for on the lowest numbered enabled DDC, because the gateware has
   a single decimation register.
 * The board answers discovery as a **Hermes**.
-* Tuning uses the same increment for both LOs, `phase / 2`, as the protocol 1
-  server did.  The transmit LO is clocked at 122.88 MHz and the receive LOs at
-  61.44 MHz, but the transmit DDS accumulates in 31 bits rather than 30 - the
-  width follows from DDS_CLOCK_RATE and FREQUENCY_RESOLUTION, not from the
-  PHASE_WIDTH line - so the doubled clock and the extra bit cancel.
+* Tuning uses the same increment for both LOs, `phase / 2`, exactly as the
+  protocol 1 server did, transmit included.
 * Not implemented: the wideband ADC stream, PureSignal (the two feedback
   channels locked to the TX LO are still in the gateware but protocol 2 has
   no way to reach them yet), and host-chosen UDP port numbers.
