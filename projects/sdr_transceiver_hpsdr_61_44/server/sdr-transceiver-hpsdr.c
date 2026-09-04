@@ -82,9 +82,15 @@ Differences from the protocol 1 server that follow from the hardware:
 #define BOARD_HERMES 1
 #define GATEWARE_VERSION 39
 
-/* DDC sample rates the gateware can produce: 61.44e6 / (2 * cic_rate) */
+/* DDC sample rates the gateware can produce: 61.44e6 / (2 * cic_rate).
+
+   3072 kHz is the ceiling of the receive chain, not a chosen limit: at that
+   rate the ten channels feed the FIR at 10 * 6.144 = 61.44 MS/s, one sample
+   per clock, so the stream between the CICs and the FIR is saturated.  It
+   also leaves no slack for backpressure, so it is the first rate to suspect
+   if samples go missing. */
 #define RATE_MIN 48000
-#define RATE_MAX 1536000
+#define RATE_MAX 3072000
 
 /* DMA ring: 32768 bursts of 128 bytes = 4 MiB, four 32 byte sample sets per
    burst.  Both counts are powers of two so the wrap is a mask. */
@@ -550,6 +556,7 @@ static void set_rate(int hz)
     case 384000:  cic = 80; break;
     case 768000:  cic = 40; break;
     case 1536000: cic = 20; break;
+    case 3072000: cic = 10; break;
     default: return;
   }
 

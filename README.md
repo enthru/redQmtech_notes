@@ -31,9 +31,13 @@ What the port needed, and what it costs:
   `tx.tcl` moved with it: the interpolating FIR now runs at 0.192 MHz and the
   CIC interpolates by 320 from 0.384 MHz.  Coefficients are unchanged - the
   CIC compensation is insensitive to the rate over this range.
-* **DDC rates now reach 1536 kHz.**  The RX CIC decimation range in `rx.tcl`
-  is 20 to 640 (1536 kHz down to 48 kHz) and the FIR after it runs at up to
-  3.072 MHz, which costs roughly four times the DSP slices it used to.
+* **DDC rates now reach 3072 kHz.**  The RX CIC decimation range in `rx.tcl`
+  is 10 to 640 (3072 kHz down to 48 kHz) and the FIR after it runs at up to
+  6.144 MHz.  3072 kHz is the ceiling of this chain rather than a chosen
+  limit: the ten channels then feed the FIR at 10 x 6.144 = 61.44 MS/s, one
+  sample per clock, so the stream is saturated and there is no slack for
+  backpressure.  The FIR costs roughly eight times the DSP slices it did at
+  384 kHz.
 * **RX samples reach the CPU by DMA**, not through the AXI hub FIFO.  Five
   channels at 1536 kHz are 49 MB/s, well past what single word reads over
   M_AXI_GP sustain, so `rx.tcl` ends in an `axis_ram_writer` on `S_AXI_ACP`
