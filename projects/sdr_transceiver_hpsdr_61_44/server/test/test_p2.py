@@ -25,7 +25,7 @@ except socket.timeout:
 check("discovery reply is 60 bytes", len(rep) == 60, str(len(rep)))
 check("discovery status is idle", rep[4] == 2, hex(rep[4]))
 check("discovery board is Hermes", rep[11] == 1, str(rep[11]))
-check("discovery advertises 3 DDCs", rep[20] == 3, str(rep[20]))
+check("discovery advertises 2 DDCs", rep[20] == 2, str(rep[20]))
 check("discovery reports a MAC", rep[5:11] != bytes(6), rep[5:11].hex())
 d.close()
 
@@ -146,8 +146,8 @@ for ddc in (0, 1):
     want = (ddc + 1) * 1000.0
     check(f"DDC{ddc} carries its own channel ({want:.0f} Hz)", abs(f - want) < 50, f"{f:.1f} Hz")
 
-check("DDC2 is silent when not enabled", len(got.get(P_IQ0+2, [])) == 0,
-      f"{len(got.get(P_IQ0+2, []))} packets")
+check("nothing on the port of a DDC the board does not have",
+      len(got.get(P_IQ0+2, [])) == 0, f"{len(got.get(P_IQ0+2, []))} packets")
 
 mic = got.get(P_TXSPEC, [])
 check("mic stream runs at 48 kHz", abs(len(mic)*64 - 48000) < 48000*0.15, f"{len(mic)*64} samples/s")
@@ -160,7 +160,7 @@ if hp:
     check("status reports PLL locked, PTT down", hp[0][4] == 0x08, hex(hp[0][4]))
 
 # ---- rate change ----------------------------------------------------------
-for rate in (48000, 768000, 1536000, 3072000):
+for rate in (48000, 768000, 1536000, 3072000, 6144000):
     print(f"\n{rate//1000} kHz, DDC0 only")
     rxspec(0b001, rate); highprio(True)
     time.sleep(0.4)
@@ -173,6 +173,8 @@ for rate in (48000, 768000, 1536000, 3072000):
     if pkts:
         f = tone_hz(pkts[len(pkts)//2], rate)
         check(f"{rate//1000} kHz tone still on channel 0", abs(f - 1000) < 100, f"{f:.1f} Hz")
+    check(f"{rate//1000} kHz DDC1 silent while disabled", len(got.get(P_IQ0+1, [])) == 0,
+          f"{len(got.get(P_IQ0+1, []))} packets")
 
 # ---- transmit and audio ---------------------------------------------------
 print("\ntransmit: PTT with TX I/Q and RX audio")

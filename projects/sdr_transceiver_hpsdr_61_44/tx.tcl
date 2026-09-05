@@ -17,11 +17,6 @@ cell pavel-demin:user:port_slicer slice_3 {
   DIN_WIDTH 96 DIN_FROM 63 DIN_TO 48
 }
 
-# Create port_slicer
-cell pavel-demin:user:port_slicer slice_4 {
-  DIN_WIDTH 96 DIN_FROM 79 DIN_TO 64
-}
-
 # Create axis_fifo
 cell pavel-demin:user:axis_fifo fifo_0 {
   S_AXIS_TDATA_WIDTH 32
@@ -307,17 +302,6 @@ cell pavel-demin:user:dsp48 mult_1 {
 } {
   A mult_0/m_axis_dout_tdata
   B slice_3/dout
-  CLK /pll_0/clk_out3
-}
-
-# Create dsp48
-cell pavel-demin:user:dsp48 mult_2 {
-  A_WIDTH 24
-  B_WIDTH 16
-  P_WIDTH 18
-} {
-  A mult_0/m_axis_dout_tdata
-  B slice_4/dout
   CLK /pll_0/clk_out3
 }
 

@@ -128,7 +128,7 @@ static int stub_ioctl(int fd, unsigned long request, ...)
    (n + 1) * 1000 Hz so a packet delivered to the wrong DDC is visible. */
 static void *fake_gateware(void *arg)
 {
-  double phase[5] = {0, 0, 0, 0, 0};
+  double phase[DDC_COUNT] = {0};
   int rate_seen = 0;
   long long t0 = 0;
   uint64_t bursts = 0, due;
@@ -155,18 +155,18 @@ static void *fake_gateware(void *arg)
       if(!(*rx_rst & 1)) { usleep(200); continue; }
     }
 
-    /* one burst is four 32 byte sample sets */
-    due = (uint64_t)((double)(now - t0) * 1e-6 * (double)rate_hz / 4.0);
+    /* one burst is 128 bytes worth of sample sets */
+    due = (uint64_t)((double)(now - t0) * 1e-6 * (double)rate_hz / (double)(128 / RX_SET_BYTES));
 
     if(bursts >= due) { usleep(200); continue; }
 
     while(bursts < due)
     {
-      for(i = 0; i < 4; ++i)
+      for(i = 0; i < 128 / RX_SET_BYTES; ++i)
       {
         p = ram + (size_t)(set & (RX_SETS - 1)) * RX_SET_BYTES;
         memset(p, 0, RX_SET_BYTES);
-        for(c = 0; c < 5; ++c)
+        for(c = 0; c < DDC_COUNT; ++c)
         {
           int32_t si = (int32_t)(8388607.0 * 0.4 * sin(phase[c]));
           int32_t sq = (int32_t)(8388607.0 * 0.4 * cos(phase[c]));
@@ -178,7 +178,7 @@ static void *fake_gateware(void *arg)
         ++set;
       }
       ++bursts;
-      *rx_cntr = (uint16_t)((set / 4) & (RX_BURSTS - 1));
+      *rx_cntr = (uint16_t)((set / (128 / RX_SET_BYTES)) & (RX_BURSTS - 1));
     }
 
     *tx_cntr = 2048;

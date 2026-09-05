@@ -11,12 +11,14 @@ Differences from the protocol 1 server that follow from the hardware:
   * The DDCs share one CIC decimation register, so every DDC runs at the rate
     the host asked for on the lowest numbered enabled DDC.  A host that asks
     for different rates on different DDCs gets that one rate on all of them.
-  * Three DDCs are advertised, one per LO in the gateware.  The two extra
-    receiver channels are locked to the TX LO for PureSignal and are not
-    reachable over protocol 2 yet.
+  * Two DDCs are advertised, one per LO in the gateware.  The board this runs
+    on has a single ADC, so neither diversity nor PureSignal can work here and
+    the channels those used to occupy were given back to the sample rate: two
+    DDCs fit under a CIC decimation of 5, which is what puts 6144 kHz within
+    reach.  See the RATE_MAX comment below.
   * RX samples reach the CPU by DMA into a ring buffer in DDR (S_AXI_ACP),
-    not through the AXI hub FIFO: at 1536 kHz the five channels produce
-    49 MB/s, which is well past what single word reads over M_AXI_GP sustain.
+    not through the AXI hub FIFO: at 6144 kHz the two channels produce
+    74 MB/s, which is well past what single word reads over M_AXI_GP sustain.
   * The wideband ADC stream (general register bytes 23..28) is not implemented.
 */
 
@@ -67,7 +69,7 @@ Differences from the protocol 1 server that follow from the hardware:
 #define PORT_TXIQ     1029 /* TX I/Q from host */
 #define PORT_IQ_BASE  1035 /* DDC n I/Q out on PORT_IQ_BASE + n */
 
-#define DDC_COUNT 3 /* one per LO in the gateware */
+#define DDC_COUNT 2 /* one per LO in the gateware */
 
 #define IQ_SAMPLES 238
 #define IQ_PKT_BYTES (16 + IQ_SAMPLES * 6)
@@ -84,19 +86,26 @@ Differences from the protocol 1 server that follow from the hardware:
 
 /* DDC sample rates the gateware can produce: 61.44e6 / (2 * cic_rate).
 
-   3072 kHz is the ceiling of the receive chain, not a chosen limit: at that
-   rate the ten channels feed the FIR at 10 * 6.144 = 61.44 MS/s, one sample
-   per clock, so the stream between the CICs and the FIR is saturated.  It
-   also leaves no slack for backpressure, so it is the first rate to suspect
-   if samples go missing. */
-#define RATE_MIN 48000
-#define RATE_MAX 3072000
+   The ceiling is set by the one wire between the CICs and the FIR, not by the
+   ADC.  The CICs run in parallel but the FIR is a single time multiplexed
+   core, so the four streams (two DDCs, I and Q each) are serialised onto one
+   32 bit bus at 61.44 MHz: 4 * 61.44 / cic <= 61.44, that is cic >= 4.  The
+   rate ladder needs cic = 5 for 6144 kHz, which fits with 20 percent to
+   spare; 12288 kHz would need cic = 2.5 and simply does not exist at this
+   clock.  So 6144 kHz is the top of the ladder for any channel count.
 
-/* DMA ring: 32768 bursts of 128 bytes = 4 MiB, four 32 byte sample sets per
-   burst.  Both counts are powers of two so the wrap is a mask. */
+   This is also why there are two DDCs and not three: six streams would force
+   cic >= 6, and 6144 kHz would be out of reach again. */
+#define RATE_MIN 48000
+#define RATE_MAX 6144000
+
+/* DMA ring: 32768 bursts of 128 bytes = 4 MiB, eight 16 byte sample sets per
+   burst.  Both counts are powers of two so the wrap is a mask.  A sample set
+   is two channels of 24 bit I and Q, 12 bytes, padded to 16 so it divides the
+   burst and the writer's 64 bit beat. */
 #define RX_BURSTS 32768
 #define RX_RAM_SIZE (RX_BURSTS * 128)
-#define RX_SET_BYTES 32
+#define RX_SET_BYTES 16
 #define RX_SETS (RX_BURSTS * (128 / RX_SET_BYTES))
 
 /* TX I/Q FIFO holds 4096 32 bit words, two per sample: 5.3 ms at 192 kHz.
@@ -557,6 +566,7 @@ static void set_rate(int hz)
     case 768000:  cic = 40; break;
     case 1536000: cic = 20; break;
     case 3072000: cic = 10; break;
+    case 6144000: cic = 5; break;
     default: return;
   }
 
@@ -1004,7 +1014,7 @@ static void build_iq_packet(uint8_t *pkt, int ddc, uint32_t seq, uint64_t stamp,
 }
 
 /* One thread for all DDCs: they share the decimation rate, so their samples
-   arrive in the same 32 byte sample set and their packets are due at the same
+   arrive in the same 16 byte sample set and their packets are due at the same
    moment. */
 static void *handler_ddc(void *arg)
 {
@@ -1272,7 +1282,7 @@ int main(int argc, char *argv[])
   volatile void *cfg, *sts;
   volatile int32_t *tx_ramp;
   volatile uint16_t *tx_size, *dac_size;
-  volatile int16_t *ps_level, *dac_ramp;
+  volatile int16_t *dac_ramp;
   volatile uint8_t *rx_sel, *tx_sel;
   float scale, ramp[1024], a[4] = {0.35875, 0.48829, 0.14128, 0.01168};
   uint32_t buffer_size;
@@ -1287,13 +1297,16 @@ int main(int argc, char *argv[])
   uint8_t chan = 0;
   long number;
 
-  for(i = 0; i < 6; ++i)
+  /* One ADC per argument: two DDC channels then the two TX channels.  This
+     board wires only ADC A, so the DDC arguments have nothing to choose
+     between and exist to keep the selectors in the gateware driven. */
+  for(i = 0; i < 4; ++i)
   {
     errno = 0;
-    number = (argc == 7) ? strtol(argv[i + 1], &end, 10) : -1;
+    number = (argc == 5) ? strtol(argv[i + 1], &end, 10) : -1;
     if(errno != 0 || end == argv[i + 1] || number < 1 || number > 2)
     {
-      fprintf(stderr, "Usage: sdr-transceiver-hpsdr 1|2 1|2 1|2 1|2 1|2 1|2\n");
+      fprintf(stderr, "Usage: sdr-transceiver-hpsdr 1|2 1|2 1|2 1|2\n");
       return EXIT_FAILURE;
     }
     chan |= (number - 1) << i;
@@ -1464,7 +1477,6 @@ int main(int argc, char *argv[])
   tx_freq = (uint32_t *)(cfg + 20);
   tx_size = (uint16_t *)(cfg + 24);
   tx_level = (int16_t *)(cfg + 26);
-  ps_level = (int16_t *)(cfg + 28);
 
   tx_sel = (uint8_t *)(cfg + 30);
 
@@ -1487,8 +1499,8 @@ int main(int argc, char *argv[])
   *rx_wrap = RX_BURSTS - 1;
 
   /* set rx and tx selectors */
-  *rx_sel = chan & 15;
-  *tx_sel = (chan >> 4) & 3;
+  *rx_sel = chan & 3;
+  *tx_sel = (chan >> 2) & 3;
 
   /* set all GPIO pins to low */
   *gpio_out = 0;
@@ -1496,7 +1508,6 @@ int main(int argc, char *argv[])
   /* set default rx phase increment */
   rx_freq[0] = (uint32_t)floor(600000 / 61.44e6 * (1 << 30) + 0.5);
   rx_freq[1] = (uint32_t)floor(600000 / 61.44e6 * (1 << 30) + 0.5);
-  rx_freq[2] = (uint32_t)floor(600000 / 61.44e6 * (1 << 30) + 0.5);
 
   /* set default rx sample rate */
   *rx_rate = 640;
@@ -1520,9 +1531,6 @@ int main(int argc, char *argv[])
 
   /* set default tx level */
   *tx_level = 21910;
-
-  /* set ps level */
-  *ps_level = 18716;
 
   /* set default tx mux channel */
   *tx_rst &= ~16;

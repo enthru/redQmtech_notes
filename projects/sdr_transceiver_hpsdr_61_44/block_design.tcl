@@ -235,11 +235,8 @@ module rx_0 {
   slice_3/din cfg_slice_0/dout
   slice_4/din cfg_slice_0/dout
   slice_5/din cfg_slice_0/dout
-  slice_6/din cfg_slice_0/dout
-  slice_7/din cfg_slice_0/dout
   slice_8/din cfg_slice_0/dout
   slice_9/din cfg_slice_0/dout
-  slice_10/din cfg_slice_0/dout
   writer_0/min_addr addr_slice_0/dout
   writer_0/cfg_data wrap_slice_0/dout
 }
@@ -298,16 +295,9 @@ module tx_0 {
   slice_1/din cfg_slice_1/dout
   slice_2/din cfg_slice_1/dout
   slice_3/din cfg_slice_1/dout
-  slice_4/din cfg_slice_1/dout
   slice_5/din cfg_slice_1/dout
   slice_6/din cfg_slice_1/dout
-  dds_0/m_axis_data_tdata rx_0/dds_slice_6/din
-  dds_0/m_axis_data_tdata rx_0/dds_slice_7/din
-  dds_0/m_axis_data_tdata rx_0/dds_slice_8/din
-  dds_0/m_axis_data_tdata rx_0/dds_slice_9/din
   concat_1/dout dac_0/s_axis_tdata
-  mult_2/P rx_0/adc_slice_8/din
-  mult_2/P rx_0/adc_slice_9/din
 }
 
 # CODEC
