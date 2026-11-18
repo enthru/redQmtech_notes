@@ -6,7 +6,9 @@ compiled into the board's binary.
 
 The fake hardware models the parts the protocol code actually reads back:
 the DMA ring and its burst counter (filled with a per-channel tone), the
-transmit and codec FIFO fill levels, and the GPIO inputs.
+transmit and codec FIFO fill levels, and the GPIO inputs.  The I2C bus
+carries one ADS1115 at 0x48 with fixed voltages on AIN0..AIN3 and nothing
+else, so every other peripheral probe goes unanswered.
 */
 
 #include <stdio.h>
@@ -63,6 +65,24 @@ static int clock_nanosleep(clockid_t id, int flags, const struct timespec *req,
 
 #define FAKE_MEM_FD 900
 #define FAKE_CMA_FD 901
+#define FAKE_I2C_FD 902 /* and up, one per open */
+#define FAKE_I2C_FDS 4
+
+#define STUB_I2C_SLAVE       0x0703
+#define STUB_I2C_SLAVE_FORCE 0x0706
+
+/* volts on AIN0..AIN3 */
+static const double fake_ads_volts[4] = {1.0, 0.25, 2.0, 3.0};
+
+static int fake_i2c_open = 0;
+static int fake_i2c_addr[FAKE_I2C_FDS];
+static uint8_t fake_ads_pointer = 0;
+static uint16_t fake_ads_config = 0x8583, fake_ads_result = 0;
+
+static int is_fake_i2c(int fd)
+{
+  return fd >= FAKE_I2C_FD && fd < FAKE_I2C_FD + fake_i2c_open;
+}
 
 static void *fake_cma;
 static uint32_t fake_cma_phys = 0x0e000000;
@@ -71,14 +91,59 @@ static int stub_open(const char *path, int flags, ...)
 {
   if(!strcmp(path, "/dev/mem")) return FAKE_MEM_FD;
   if(!strcmp(path, "/dev/cma")) return FAKE_CMA_FD;
+  if(!strcmp(path, "/dev/i2c-0") && fake_i2c_open < FAKE_I2C_FDS)
+    return FAKE_I2C_FD + fake_i2c_open++;
   errno = ENOENT;
-  return -1; /* no i2c, no uart */
+  return -1; /* no uart */
 }
 
 static int stub_close(int fd)
 {
-  if(fd == FAKE_MEM_FD || fd == FAKE_CMA_FD) return 0;
+  if(fd == FAKE_MEM_FD || fd == FAKE_CMA_FD || is_fake_i2c(fd)) return 0;
   return close(fd);
+}
+
+/* Only 0x48 acknowledges.  A conversion completes at once, with the input
+   selected by the mux bits, at +-4.096 V full scale. */
+static ssize_t stub_write(int fd, const void *buf, size_t n)
+{
+  const uint8_t *b = buf;
+  int mux;
+
+  if(!is_fake_i2c(fd)) return write(fd, buf, n);
+  if(fake_i2c_addr[fd - FAKE_I2C_FD] != 0x48 || n < 1)
+  {
+    errno = ENXIO;
+    return -1;
+  }
+  fake_ads_pointer = b[0] & 3;
+  if(n == 3 && fake_ads_pointer == 1)
+  {
+    fake_ads_config = b[1] << 8 | b[2];
+    if(fake_ads_config & 0x8000)
+    {
+      mux = (fake_ads_config >> 12) & 7;
+      fake_ads_result = (mux & 4) ? (int16_t)(fake_ads_volts[mux & 3] / 4.096 * 32768.0) : 0;
+    }
+  }
+  return n;
+}
+
+static ssize_t stub_read(int fd, void *buf, size_t n)
+{
+  uint8_t *b = buf;
+  uint16_t reg;
+
+  if(!is_fake_i2c(fd)) return read(fd, buf, n);
+  if(fake_i2c_addr[fd - FAKE_I2C_FD] != 0x48 || n != 2)
+  {
+    errno = ENXIO;
+    return -1;
+  }
+  reg = fake_ads_pointer == 0 ? fake_ads_result : fake_ads_pointer == 1 ? (fake_ads_config | 0x8000) : 0;
+  b[0] = reg >> 8;
+  b[1] = reg;
+  return 2;
 }
 
 static void *stub_mmap(void *addr, size_t len, int prot, int flags, int fd, off_t off)
@@ -96,6 +161,11 @@ static int stub_ioctl(int fd, unsigned long request, ...)
   arg = va_arg(ap, void *);
   va_end(ap);
 
+  if(is_fake_i2c(fd) && (request == STUB_I2C_SLAVE || request == STUB_I2C_SLAVE_FORCE))
+  {
+    fake_i2c_addr[fd - FAKE_I2C_FD] = (int)(intptr_t)arg;
+    return 0;
+  }
   if(fd == FAKE_CMA_FD && (request & 0xff) == 0)
   {
     *(uint32_t *)arg = fake_cma_phys;
@@ -115,6 +185,8 @@ static int stub_ioctl(int fd, unsigned long request, ...)
 #define close stub_close
 #define mmap stub_mmap
 #define ioctl stub_ioctl
+#define write stub_write
+#define read stub_read
 #define main server_main
 #include "sdr-transceiver-hpsdr.c"
 #undef main
@@ -122,6 +194,8 @@ static int stub_ioctl(int fd, unsigned long request, ...)
 #undef close
 #undef mmap
 #undef ioctl
+#undef write
+#undef read
 
 /* The gateware: fills the DMA ring at the configured rate and keeps the
    transmit FIFOs at a plausible level.  Channel n carries a tone at

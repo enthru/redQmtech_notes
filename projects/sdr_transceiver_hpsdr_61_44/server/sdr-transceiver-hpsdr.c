@@ -59,6 +59,7 @@ Differences from the protocol 1 server that follow from the hardware:
 #define ADDR_DAC1 0x61 /* MCP4725 address 1 */
 #define ADDR_ARDUINO 0x40 /* G8NJJ Arduino sketch */
 #define ADDR_NUCLEO 0x55 /* NUCLEO-G071RB */
+#define ADDR_ADS1115 0x48 /* ADS1115 with ADDR to GND */
 
 /* ports the host sends to, and that we answer from */
 #define PORT_GENERAL  1024 /* general registers in, command response out */
@@ -159,6 +160,11 @@ uint8_t log_table_lookup[256]; /* lookup table from linear scale to
                                   6 bit / 0.5 dB attenuation */
 
 uint8_t i2c_boost_data = 0;
+
+/* The ADS1115 has a descriptor of its own: the slave address belongs to the
+   descriptor, and the other one is retargeted from several threads. */
+int ads_fd = -1;
+volatile uint16_t ads_data[3] = {0, 0, 0}; /* forward, reverse, supply */
 
 uint8_t dac_level_data = 0;
 
@@ -1175,6 +1181,67 @@ static void *handler_mic(void *arg)
   return NULL;
 }
 
+/* ADS1115 in place of the XADC: AIN0 forward, AIN1 reverse, AIN2 supply.
+   Single-shot conversions at 860 SPS taken in turn, so each input is at most
+   about 4 ms old.  Results are rescaled to what the Hermes 12-bit converter
+   with its 3.3 V reference would report, which is what the host's power
+   formula assumes. */
+static void *handler_ads(void *arg)
+{
+  uint8_t buffer[3];
+  int16_t raw;
+  int32_t value;
+  int i = 0, j;
+
+  while(1)
+  {
+    /* OS, AINi to GND, +-4.096 V, single shot, 860 SPS, comparator off */
+    buffer[0] = 0x01;
+    buffer[1] = 0xc3 | (i << 4);
+    buffer[2] = 0xe3;
+    if(write(ads_fd, buffer, 3) != 3)
+    {
+      usleep(100000);
+      continue;
+    }
+
+    /* the conversion register keeps the previous input's result until this
+       one is done, so wait for OS to come back rather than trust a delay */
+    usleep(1200);
+    for(j = 0; j < 10; ++j)
+    {
+      if(write(ads_fd, buffer, 1) != 1 || read(ads_fd, buffer + 1, 2) != 2)
+      {
+        buffer[1] = 0;
+        break;
+      }
+      if(buffer[1] & 0x80) break;
+      usleep(100);
+    }
+    if(!(buffer[1] & 0x80))
+    {
+      usleep(100000);
+      continue;
+    }
+
+    buffer[0] = 0x00;
+    if(write(ads_fd, buffer, 1) != 1 || read(ads_fd, buffer, 2) != 2)
+    {
+      usleep(100000);
+      continue;
+    }
+
+    /* 125 uV per count, so 3.3 V is 26400 */
+    raw = buffer[0] << 8 | buffer[1];
+    value = raw * 4095 / 26400;
+    ads_data[i] = value < 0 ? 0 : value > 4095 ? 4095 : value;
+
+    if(++i == 3) i = 0;
+  }
+
+  return NULL;
+}
+
 /* High priority status, 20 per second while receiving and every millisecond
    while transmitting, where the host wants the power readings promptly. */
 static void *handler_status(void *arg)
@@ -1201,14 +1268,15 @@ static void *handler_status(void *arg)
     buffer[4] |= ((in >> 2) & 1) << 2;  /* dash */
     buffer[4] |= 0x08;                  /* PLL locked */
 
-    /* The same XADC channels the protocol 1 server reported. */
-    value = xadc[30] >> 3;
+    /* The ADS1115 if one answered, otherwise the same XADC channels the
+       protocol 1 server reported. */
+    value = ads_fd >= 0 ? ads_data[0] : xadc[30] >> 3;
     buffer[14] = value >> 8;
     buffer[15] = value;
-    value = xadc[20] >> 3;
+    value = ads_fd >= 0 ? ads_data[1] : xadc[20] >> 3;
     buffer[22] = value >> 8;
     buffer[23] = value;
-    value = xadc[31] >> 3;
+    value = ads_fd >= 0 ? ads_data[2] : xadc[31] >> 3;
     buffer[49] = value >> 8;
     buffer[50] = value;
 
@@ -1428,6 +1496,17 @@ int main(int argc, char *argv[])
     }
   }
 
+  if((ads_fd = open("/dev/i2c-0", O_RDWR)) >= 0)
+  {
+    /* a bare pointer write is acknowledged only if the chip is there */
+    buffer[0] = 0x01;
+    if(ioctl(ads_fd, I2C_SLAVE, ADDR_ADS1115) < 0 || write(ads_fd, buffer, 1) != 1)
+    {
+      close(ads_fd);
+      ads_fd = -1;
+    }
+  }
+
   cfg = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x40000000);
   sts = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x41000000);
   fifo = mmap(NULL, 8*sysconf(_SC_PAGESIZE), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x42000000);
@@ -1629,6 +1708,16 @@ int main(int argc, char *argv[])
   }
   pthread_detach(thread);
 
+  if(ads_fd >= 0)
+  {
+    if(pthread_create(&thread, NULL, handler_ads, NULL) != 0)
+    {
+      perror("pthread_create");
+      return EXIT_FAILURE;
+    }
+    pthread_detach(thread);
+  }
+
   if(pthread_create(&thread, NULL, handler_status, NULL) != 0)
   {
     perror("pthread_create");
@@ -1638,6 +1727,7 @@ int main(int argc, char *argv[])
 
   fprintf(stderr, "hpsdr2: %d DDCs, ring %d MiB at 0x%08x\n",
     DDC_COUNT, RX_RAM_SIZE / (1024 * 1024), buffer_size);
+  fprintf(stderr, "hpsdr2: power and supply from the %s\n", ads_fd >= 0 ? "ADS1115" : "XADC");
 
   pfd[0].fd = sock_general;
   pfd[1].fd = sock_rxspec;

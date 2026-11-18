@@ -158,6 +158,11 @@ check("high priority status arrives", len(hp) >= 15, f"{len(hp)} packets/s")
 check("high priority status is 60 bytes", all(len(p) == 60 for p in hp) and len(hp) > 0)
 if hp:
     check("status reports PLL locked, PTT down", hp[0][4] == 0x08, hex(hp[0][4]))
+    # stub_host's ADS1115: AIN0 1.0 V, AIN1 0.25 V, AIN2 2.0 V, as 12-bit counts of 3.3 V
+    p = hp[-1]
+    for name, o, volts in (("forward", 14, 1.0), ("reverse", 22, 0.25), ("supply", 49, 2.0)):
+        got_v = (p[o] << 8 | p[o+1]) / 4095 * 3.3
+        check(f"{name} reads {volts} V from the ADS1115", abs(got_v - volts) < 0.005, f"{got_v:.4f} V")
 
 # ---- rate change ----------------------------------------------------------
 for rate in (48000, 768000, 1536000, 3072000, 6144000):
