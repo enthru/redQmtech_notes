@@ -23,6 +23,8 @@ cell xilinx.com:ip:processing_system7 ps_0 {
   PCW_USE_M_AXI_GP1 1
   PCW_USE_S_AXI_ACP 1
   PCW_USE_DEFAULT_ACP_USER_VAL 1
+  PCW_I2C0_PERIPHERAL_ENABLE 1
+  PCW_I2C0_I2C0_IO EMIO
 } {
   M_AXI_GP0_ACLK pll_0/clk_out1
   M_AXI_GP1_ACLK pll_0/clk_out1
@@ -35,6 +37,11 @@ apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {
   Master Disable
   Slave Disable
 } [get_bd_cells ps_0]
+
+# I2C0 goes out through EMIO to the expansion header, for the ADS1115 that
+# reads forward and reverse power; the wrapper puts the IOBUFs on it.
+create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 iic_0
+connect_bd_intf_net [get_bd_intf_pins ps_0/IIC_0] [get_bd_intf_ports iic_0]
 
 # Create xlconstant
 cell xilinx.com:ip:xlconstant const_0

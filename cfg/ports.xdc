@@ -135,3 +135,10 @@ set_property PACKAGE_PIN B22 [get_ports {exp_n_alex[1]}]
 set_property PACKAGE_PIN D20 [get_ports {exp_n_alex[2]}]
 set_property PACKAGE_PIN C20 [get_ports {exp_n_alex[3]}]
 
+### I2C0 over EMIO, JP5 pin 5 SCL and pin 6 SDA, next to 3V3 on 3/4 and GND on 1/2
+
+set_property IOSTANDARD LVCMOS25 [get_ports iic_0_*_io]
+set_property PULLTYPE PULLUP [get_ports iic_0_*_io]
+
+set_property PACKAGE_PIN L22 [get_ports iic_0_scl_io]
+set_property PACKAGE_PIN L21 [get_ports iic_0_sda_io]
