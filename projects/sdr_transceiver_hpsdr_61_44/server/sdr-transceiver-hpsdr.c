@@ -42,6 +42,7 @@
 #define ADDR_DAC1 0x61 /* MCP4725 address 1 */
 #define ADDR_ARDUINO 0x40 /* G8NJJ Arduino sketch */
 #define ADDR_NUCLEO 0x55 /* NUCLEO-G071RB */
+#define ADDR_ADS1115 0x48 /* ADS1115 with ADDR to GND */
 
 volatile uint32_t *rx_freq, *tx_freq, *alex, *dac_freq;
 volatile uint16_t *rx_rate, *rx_cntr, *tx_cntr, *dac_cntr, *adc_cntr;
@@ -64,6 +65,7 @@ int active_thread = 0;
 void process_ep2(uint8_t *frame);
 void *handler_ep6(void *arg);
 void *handler_keyer(void *arg);
+void *handler_ads(void *arg);
 
 /* variables to handle I2C devices */
 int i2c_fd;
@@ -98,6 +100,11 @@ uint8_t log_table_lookup[256]; /* lookup table from linear scale to
                                   6 bit / 0.5 dB attenuation */
 
 uint8_t i2c_boost_data = 0;
+
+/* The ADS1115 has a descriptor of its own: the slave address belongs to the
+   descriptor, and the other one is retargeted from several threads. */
+int ads_fd = -1;
+volatile uint16_t ads_data[4] = {0, 0, 0, 0}; /* AIN0..AIN3 */
 
 uint8_t dac_level_data = 0;
 
@@ -562,6 +569,19 @@ int main(int argc, char *argv[])
     }
   }
 
+  if((ads_fd = open("/dev/i2c-0", O_RDWR)) >= 0)
+  {
+    /* a bare pointer write is acknowledged only if the chip is there */
+    buffer[0][0] = 0x01;
+    if(ioctl(ads_fd, I2C_SLAVE, ADDR_ADS1115) < 0 || write(ads_fd, buffer[0], 1) != 1)
+    {
+      close(ads_fd);
+      ads_fd = -1;
+    }
+  }
+
+  fprintf(stderr, "power and supply from the %s\n", ads_fd >= 0 ? "ADS1115" : "XADC");
+
   cfg = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x40000000);
   sts = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x41000000);
   fifo = mmap(NULL, 8*sysconf(_SC_PAGESIZE), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0x42000000);
@@ -723,6 +743,16 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
   pthread_detach(thread);
+
+  if(ads_fd >= 0)
+  {
+    if(pthread_create(&thread, NULL, handler_ads, NULL) < 0)
+    {
+      perror("pthread_create");
+      return EXIT_FAILURE;
+    }
+    pthread_detach(thread);
+  }
 
   while(1)
   {
@@ -1440,22 +1470,22 @@ void *handler_ep6(void *arg)
       pointer[3] |= (*gpio_in & 7) | cw_ptt;
       if(header_offset == 8)
       {
-        value = xadc[30] >> 3;
+        value = ads_fd >= 0 ? ads_data[0] : xadc[30] >> 3;
         pointer[6] = (value >> 8) & 0xff;
         pointer[7] = value & 0xff;
       }
       else if(header_offset == 16)
       {
-        value = xadc[20] >> 3;
+        value = ads_fd >= 0 ? ads_data[1] : xadc[20] >> 3;
         pointer[4] = (value >> 8) & 0xff;
         pointer[5] = value & 0xff;
-        value = xadc[21] >> 3;
+        value = ads_fd >= 0 ? ads_data[2] : xadc[21] >> 3;
         pointer[6] = (value >> 8) & 0xff;
         pointer[7] = value & 0xff;
       }
       else if(header_offset == 24)
       {
-        value = xadc[31] >> 3;
+        value = ads_fd >= 0 ? ads_data[3] : xadc[31] >> 3;
         pointer[4] = (value >> 8) & 0xff;
         pointer[5] = value & 0xff;
       }
@@ -1576,6 +1606,67 @@ static inline void cw_space_delay(int code)
     cw_memory[0] = cw_input();
     cw_memory[1] |= cw_memory[0];
   }
+}
+
+/* ADS1115 in place of the XADC, AIN0..AIN3 in the slots of XADC channels
+   30, 20, 21 and 31.  Single-shot conversions at 860 SPS taken in turn, so
+   each input is at most about 5 ms old.  Results are rescaled to what the
+   Hermes 12-bit converter with its 3.3 V reference would report, which is
+   what the host's power formula assumes. */
+void *handler_ads(void *arg)
+{
+  uint8_t buffer[3];
+  int16_t raw;
+  int32_t value;
+  int i = 0, j;
+
+  while(1)
+  {
+    /* OS, AINi to GND, +-4.096 V, single shot, 860 SPS, comparator off */
+    buffer[0] = 0x01;
+    buffer[1] = 0xc3 | (i << 4);
+    buffer[2] = 0xe3;
+    if(write(ads_fd, buffer, 3) != 3)
+    {
+      usleep(100000);
+      continue;
+    }
+
+    /* the conversion register keeps the previous input's result until this
+       one is done, so wait for OS to come back rather than trust a delay */
+    usleep(1200);
+    for(j = 0; j < 10; ++j)
+    {
+      if(write(ads_fd, buffer, 1) != 1 || read(ads_fd, buffer + 1, 2) != 2)
+      {
+        buffer[1] = 0;
+        break;
+      }
+      if(buffer[1] & 0x80) break;
+      usleep(100);
+    }
+    if(!(buffer[1] & 0x80))
+    {
+      usleep(100000);
+      continue;
+    }
+
+    buffer[0] = 0x00;
+    if(write(ads_fd, buffer, 1) != 1 || read(ads_fd, buffer, 2) != 2)
+    {
+      usleep(100000);
+      continue;
+    }
+
+    /* 125 uV per count, so 3.3 V is 26400 */
+    raw = buffer[0] << 8 | buffer[1];
+    value = raw * 4095 / 26400;
+    ads_data[i] = value < 0 ? 0 : value > 4095 ? 4095 : value;
+
+    if(++i == 4) i = 0;
+  }
+
+  return NULL;
 }
 
 void *handler_keyer(void *arg)
