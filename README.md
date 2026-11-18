@@ -9,6 +9,8 @@ This is an adaptation of red-pitaya hpsdr receiver/transceiver code by Pavel Dem
 **Board pins:**
 ![alt text](https://enthru.net/wp-content/uploads/2024/09/qmtech_pins.jpg)
 <br />
+![alt text](https://enthru.net/wp-content/uploads/2026/11/cpinout.png)
+<br />
 Pins assignment can be found in this file - cfg/ports.xdc
 <br /><br />
 **Some links:**
