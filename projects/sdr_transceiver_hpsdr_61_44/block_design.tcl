@@ -53,7 +53,7 @@ cell xilinx.com:ip:proc_sys_reset rst_0 {} {
 # HUB
 
 # Create axi_hub
-cell pavel-demin:user:axi_hub hub_0 {
+cell axi_hub hub_0 {
   CFG_DATA_WIDTH 320
   STS_DATA_WIDTH 96
 } {
@@ -65,7 +65,7 @@ cell pavel-demin:user:axi_hub hub_0 {
 # XADC
 
 # Create xadc_bram
-#cell pavel-demin:user:xadc_bram xadc_0 {} {
+#cell xadc_bram xadc_0 {} {
 #  B_BRAM hub_0/B02_BRAM
 #  Vp_Vn Vp_Vn
 #  Vaux0 Vaux0
@@ -87,7 +87,7 @@ cell xilinx.com:ip:util_ds_buf ibufds_a {
 }
 
 # Create axis_red_pitaya_adc
-cell pavel-demin:user:axis_red_pitaya_adc adc_0 {} {
+cell axis_red_pitaya_adc adc_0 {} {
   aclk pll_0/clk_out1
   adc_dat_a ibufds_a/IBUF_OUT
 }
@@ -95,7 +95,7 @@ cell pavel-demin:user:axis_red_pitaya_adc adc_0 {} {
 # DAC
 
 # Create axis_red_pitaya_dac
-cell pavel-demin:user:axis_red_pitaya_dac dac_0 {
+cell axis_red_pitaya_dac dac_0 {
   DAC_DATA_WIDTH 14
 } {
   aclk pll_0/clk_out3
@@ -115,7 +115,7 @@ delete_bd_objs [get_bd_ports exp_n_tri_io]
 create_bd_port -dir IO -from 3 -to 0 exp_n_tri_io
 
 # Create gpio_debouncer
-cell pavel-demin:user:gpio_debouncer gpio_0 {
+cell gpio_debouncer gpio_0 {
   DATA_WIDTH 4
   CNTR_WIDTH 16
 } {
@@ -138,14 +138,14 @@ delete_bd_objs [get_bd_ports exp_p_tri_io]
 create_bd_port -dir O -from 7 -to 0 exp_p_tri_io
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer out_slice_0 {
+cell port_slicer out_slice_0 {
   DIN_WIDTH 320 DIN_FROM 31 DIN_TO 24
 } {
   din hub_0/cfg_data
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer ptt_slice_0 {
+cell port_slicer ptt_slice_0 {
   DIN_WIDTH 320 DIN_FROM 21 DIN_TO 21
 } {
   din hub_0/cfg_data
@@ -176,7 +176,7 @@ cell xilinx.com:ip:util_vector_logic or_1 {
 create_bd_port -dir IO -from 3 -to 0 exp_n_alex
 
 # Create axis_fifo
-cell pavel-demin:user:axis_fifo fifo_0 {
+cell axis_fifo fifo_0 {
   S_AXIS_TDATA_WIDTH 32
   M_AXIS_TDATA_WIDTH 32
   WRITE_DEPTH 1024
@@ -187,7 +187,7 @@ cell pavel-demin:user:axis_fifo fifo_0 {
 }
 
 # Create axis_alex
-cell pavel-demin:user:axis_alex alex_0 {} {
+cell axis_alex alex_0 {} {
   S_AXIS fifo_0/M_AXIS
   aclk pll_0/clk_out1
   aresetn rst_0/peripheral_aresetn
@@ -196,21 +196,21 @@ cell pavel-demin:user:axis_alex alex_0 {} {
 # RX 0
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer rst_slice_0 {
+cell port_slicer rst_slice_0 {
   DIN_WIDTH 320 DIN_FROM 7 DIN_TO 0
 } {
   din hub_0/cfg_data
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer rst_slice_1 {
+cell port_slicer rst_slice_1 {
   DIN_WIDTH 320 DIN_FROM 15 DIN_TO 8
 } {
   din hub_0/cfg_data
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer cfg_slice_0 {
+cell port_slicer cfg_slice_0 {
   DIN_WIDTH 320 DIN_FROM 159 DIN_TO 32
 } {
   din hub_0/cfg_data
@@ -235,42 +235,42 @@ module rx_0 {
 # TX 0
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer rst_slice_2 {
+cell port_slicer rst_slice_2 {
   DIN_WIDTH 320 DIN_FROM 16 DIN_TO 16
 } {
   din hub_0/cfg_data
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer rst_slice_3 {
+cell port_slicer rst_slice_3 {
   DIN_WIDTH 320 DIN_FROM 17 DIN_TO 17
 } {
   din hub_0/cfg_data
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer key_slice_0 {
+cell port_slicer key_slice_0 {
   DIN_WIDTH 320 DIN_FROM 18 DIN_TO 18
 } {
   din hub_0/cfg_data
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer key_slice_1 {
+cell port_slicer key_slice_1 {
   DIN_WIDTH 320 DIN_FROM 19 DIN_TO 19
 } {
   din hub_0/cfg_data
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer sel_slice_0 {
+cell port_slicer sel_slice_0 {
   DIN_WIDTH 320 DIN_FROM 20 DIN_TO 20
 } {
   din hub_0/cfg_data
 }
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer cfg_slice_1 {
+cell port_slicer cfg_slice_1 {
   DIN_WIDTH 320 DIN_FROM 255 DIN_TO 160
 } {
   din hub_0/cfg_data
@@ -301,7 +301,7 @@ module tx_0 {
 # CODEC
 
 # Create port_slicer
-cell pavel-demin:user:port_slicer cfg_slice_2 {
+cell port_slicer cfg_slice_2 {
   DIN_WIDTH 320 DIN_FROM 319 DIN_TO 256
 } {
   din hub_0/cfg_data
