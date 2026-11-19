@@ -13,6 +13,17 @@ This is an adaptation of red-pitaya hpsdr receiver/transceiver code by Pavel Dem
 <br />
 Pins assignment can be found in this file - cfg/ports.xdc
 <br /><br />
+**Boot image (boot.bin):**
+<br />
+The ADS1115 on JP5 pins 5/6 is read through PS I2C0 over EMIO, so Linux needs `i2c0` enabled in the device tree, which a bitstream loaded later cannot add. Copy `dts/common.dts` over the same file in https://github.com/pavel-demin/qmtech-xc7z020-notes and rebuild boot.bin there:
+```
+source /opt/AMD/2025.2/Vivado/settings64.sh
+source /opt/AMD/2025.2/Vitis/settings64.sh
+make NAME=led_blinker_77_76 XSCT="xsct -nodisp" boot.bin
+```
+`-nodisp` keeps xsct 2025.2 from requiring xlsclients/Xvfb; it also wants `gmake` in PATH (on distributions without it: `ln -s /usr/bin/make ~/bin/gmake`).
+On a host with OpenSSL 4 (no ENGINE API) the kernel's `certs/extract-cert` fails to link; after the kernel is unpacked into `tmp/linux-6.6`, apply `patches/extract-cert-openssl4.patch` there with `patch -d tmp -p0` and rerun make.
+<br /><br />
 **Some links:**
 <br />
 <br />
