@@ -1377,7 +1377,7 @@ void *handler_ep6(void *arg)
   uint32_t counter;
   uint16_t value;
   uint32_t audio[512];
-  uint8_t data[4 * 4096];
+  uint8_t data[4 * 4096] __attribute__((aligned(4)));
   uint8_t buffer[25 * 1032];
   uint8_t *pointer;
   struct iovec iovec[25][1];
@@ -1449,12 +1449,12 @@ void *handler_ep6(void *arg)
 
     if(i2c_codec && --rate_counter == 0)
     {
-      memcpy(audio, codec, m * n * 8);
+      for(j = 0; j < m * n * 2; ++j) audio[j] = codec[0];
       rate_counter = 1 << rate;
       k = 0;
     }
 
-    memcpy(data, fifo, m * n * 64);
+    for(j = 0; j < m * n * 16; ++j) ((uint32_t *)data)[j] = fifo[0];
 
     data_offset = 0;
     for(i = 0; i < m; ++i)
@@ -1619,6 +1619,9 @@ void *handler_ads(void *arg)
   int16_t raw;
   int32_t value;
   int i = 0, j;
+  int debug = getenv("ADS_DEBUG") != NULL;
+  int cycles = 0;
+  float volts[4] = {0, 0, 0, 0};
 
   while(1)
   {
@@ -1662,8 +1665,20 @@ void *handler_ads(void *arg)
     raw = buffer[0] << 8 | buffer[1];
     value = raw * 4095 / 26400;
     ads_data[i] = value < 0 ? 0 : value > 4095 ? 4095 : value;
+    volts[i] = raw * 0.000125f;
 
-    if(++i == 4) i = 0;
+    if(++i == 4)
+    {
+      i = 0;
+      /* ADS_DEBUG set: about once a second, input volts and what goes out */
+      if(debug && ++cycles >= 200)
+      {
+        cycles = 0;
+        fprintf(stderr, "ads V %.3f %.3f %.3f %.3f  sent %u %u %u %u\n",
+          volts[0], volts[1], volts[2], volts[3],
+          ads_data[0], ads_data[1], ads_data[2], ads_data[3]);
+      }
+    }
   }
 
   return NULL;
