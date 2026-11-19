@@ -1619,9 +1619,6 @@ void *handler_ads(void *arg)
   int16_t raw;
   int32_t value;
   int i = 0, j;
-  int debug = getenv("ADS_DEBUG") != NULL;
-  int cycles = 0;
-  float volts[4] = {0, 0, 0, 0};
 
   while(1)
   {
@@ -1665,20 +1662,8 @@ void *handler_ads(void *arg)
     raw = buffer[0] << 8 | buffer[1];
     value = raw * 4095 / 26400;
     ads_data[i] = value < 0 ? 0 : value > 4095 ? 4095 : value;
-    volts[i] = raw * 0.000125f;
 
-    if(++i == 4)
-    {
-      i = 0;
-      /* ADS_DEBUG set: about once a second, input volts and what goes out */
-      if(debug && ++cycles >= 200)
-      {
-        cycles = 0;
-        fprintf(stderr, "ads V %.3f %.3f %.3f %.3f  sent %u %u %u %u\n",
-          volts[0], volts[1], volts[2], volts[3],
-          ads_data[0], ads_data[1], ads_data[2], ads_data[3]);
-      }
-    }
+    if(++i == 4) i = 0;
   }
 
   return NULL;
